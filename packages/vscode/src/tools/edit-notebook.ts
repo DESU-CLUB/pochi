@@ -11,7 +11,10 @@ import type { ClientTools, ToolFunctionType } from "@getpochi/tools";
 
 export const editNotebook: ToolFunctionType<
   ClientTools["editNotebook"]
-> = async ({ path: filePath, cellId, content }, { cwd, toolCallId, nonInteractive, abortSignal }) => {
+> = async (
+  { path: filePath, cellId, content },
+  { cwd, toolCallId, nonInteractive, abortSignal },
+) => {
   try {
     const absolutePath = resolvePath(filePath, cwd);
     validateNotebookPath(absolutePath);

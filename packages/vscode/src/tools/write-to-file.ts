@@ -86,11 +86,15 @@ export const writeToFile: ToolFunctionType<ClientTools["writeToFile"]> = async (
       logger.info("nonInteractive");
       logger.info("isNotebook", isNotebook);
       if (isNotebook) {
-        const nbView = await NotebookDiffView.getOrCreate(toolCallId, path, cwd);
+        const nbView = await NotebookDiffView.getOrCreate(
+          toolCallId,
+          path,
+          cwd,
+        );
         await nbView.update(processedContent, true);
         const edits = await nbView.saveChanges(path, processedContent);
         return { success: true, ...edits };
-      } 
+      }
 
       const edits = await writeTextDocument(
         path,
@@ -104,19 +108,17 @@ export const writeToFile: ToolFunctionType<ClientTools["writeToFile"]> = async (
       return { success: true, ...edits };
     }
 
-
-
     if (isNotebook) {
       const nbView = await NotebookDiffView.getOrCreate(toolCallId, path, cwd);
       await nbView.update(processedContent, true);
       const edits = await nbView.saveChanges(path, processedContent);
       return { success: true, ...edits };
-    } else {
-      const diffView = await DiffView.getOrCreate(toolCallId, path, cwd);
-      await diffView.update(processedContent, true);
-      const edits = await diffView.saveChanges(path, processedContent);
-      return { success: true, ...edits };
-    }
+    } 
+    const diffView = await DiffView.getOrCreate(toolCallId, path, cwd);
+    await diffView.update(processedContent, true);
+    const edits = await diffView.saveChanges(path, processedContent);
+    return { success: true, ...edits };
+    
   } catch (error) {
     if (isNotebook) {
       NotebookDiffView.revertAndClose(toolCallId);

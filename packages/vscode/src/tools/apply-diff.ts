@@ -122,7 +122,7 @@ export const applyDiff: ToolFunctionType<ClientTools["applyDiff"]> = async (
     }
 
     isNotebook = resolvedPath.toLowerCase().endsWith(".ipynb");
-    let edits;
+    let edits: { userEdits?: string; autoFormattingEdits?: string; newProblems?: string } = {};
     if (isNotebook) {
       const nbView = await NotebookDiffView.getOrCreate(toolCallId, path, cwd);
       await nbView.update(updatedContent, true);
