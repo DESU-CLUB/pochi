@@ -76,10 +76,22 @@ export const writeToFile: ToolFunctionType<ClientTools["writeToFile"]> = async (
   { toolCallId, abortSignal, nonInteractive, cwd },
 ) => {
   let isNotebook = false;
+  const resolvedPath = resolvePath(path, cwd);
+  isNotebook = resolvedPath.toLowerCase().endsWith(".ipynb");
+  logger.info("isNotebook", isNotebook);
   try {
     const processedContent = fixCodeGenerationOutput(content);
 
     if (nonInteractive) {
+      logger.info("nonInteractive");
+      logger.info("isNotebook", isNotebook);
+      if (isNotebook) {
+        const nbView = await NotebookDiffView.getOrCreate(toolCallId, path, cwd);
+        await nbView.update(processedContent, true);
+        const edits = await nbView.saveChanges(path, processedContent);
+        return { success: true, ...edits };
+      } 
+
       const edits = await writeTextDocument(
         path,
         processedContent,
@@ -92,8 +104,7 @@ export const writeToFile: ToolFunctionType<ClientTools["writeToFile"]> = async (
       return { success: true, ...edits };
     }
 
-    const resolvedPath = resolvePath(path, cwd);
-    isNotebook = resolvedPath.toLowerCase().endsWith(".ipynb");
+
 
     if (isNotebook) {
       const nbView = await NotebookDiffView.getOrCreate(toolCallId, path, cwd);
