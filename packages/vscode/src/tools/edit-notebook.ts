@@ -33,7 +33,6 @@ export const editNotebook: ToolFunctionType<
       cwd,
     );
     await nbView.update(serialized, true, abortSignal);
-    await nbView.saveChanges(filePath, serialized);
 
     return { success: true };
   } catch (error) {

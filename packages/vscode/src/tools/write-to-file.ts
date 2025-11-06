@@ -1,4 +1,5 @@
 import { DiffView } from "@/integrations/editor/diff-view";
+import { NotebookDiffView } from "@/integrations/editor/notebook-diff-view";
 import { createPrettyPatch } from "@/lib/fs";
 import { getLogger } from "@/lib/logger";
 import { getEditSummary, writeTextDocument } from "@/lib/write-text-document";
@@ -20,6 +21,7 @@ export const previewWriteToFile: PreviewToolFunctionType<
   if (path === undefined || content === undefined)
     return { error: "Invalid arguments for previewing writeToFile tool." };
 
+  let isNotebook = false;
   try {
     const processedContent = fixCodeGenerationOutput(content);
 
@@ -34,16 +36,32 @@ export const previewWriteToFile: PreviewToolFunctionType<
       return { success: true, _meta: { edit, editSummary } };
     }
 
-    const diffView = await DiffView.getOrCreate(toolCallId, path, cwd);
-    await diffView.update(
-      processedContent,
-      state !== "partial-call",
-      abortSignal,
-    );
+    const resolvedPath = resolvePath(path, cwd);
+    isNotebook = resolvedPath.toLowerCase().endsWith(".ipynb");
+
+    if (isNotebook) {
+      const nbView = await NotebookDiffView.getOrCreate(toolCallId, path, cwd);
+      await nbView.update(
+        processedContent,
+        state !== "partial-call",
+        abortSignal,
+      );
+    } else {
+      const diffView = await DiffView.getOrCreate(toolCallId, path, cwd);
+      await diffView.update(
+        processedContent,
+        state !== "partial-call",
+        abortSignal,
+      );
+    }
     return { success: true };
   } catch (error) {
     if (state === "call") {
-      DiffView.revertAndClose(toolCallId);
+      if (isNotebook) {
+        NotebookDiffView.revertAndClose(toolCallId);
+      } else {
+        DiffView.revertAndClose(toolCallId);
+      }
     }
     throw error;
   }
@@ -57,6 +75,7 @@ export const writeToFile: ToolFunctionType<ClientTools["writeToFile"]> = async (
   { path, content },
   { toolCallId, abortSignal, nonInteractive, cwd },
 ) => {
+  let isNotebook = false;
   try {
     const processedContent = fixCodeGenerationOutput(content);
 
@@ -73,12 +92,26 @@ export const writeToFile: ToolFunctionType<ClientTools["writeToFile"]> = async (
       return { success: true, ...edits };
     }
 
-    const diffView = await DiffView.getOrCreate(toolCallId, path, cwd);
-    await diffView.update(processedContent, true);
-    const edits = await diffView.saveChanges(path, processedContent);
-    return { success: true, ...edits };
+    const resolvedPath = resolvePath(path, cwd);
+    isNotebook = resolvedPath.toLowerCase().endsWith(".ipynb");
+
+    if (isNotebook) {
+      const nbView = await NotebookDiffView.getOrCreate(toolCallId, path, cwd);
+      await nbView.update(processedContent, true);
+      const edits = await nbView.saveChanges(path, processedContent);
+      return { success: true, ...edits };
+    } else {
+      const diffView = await DiffView.getOrCreate(toolCallId, path, cwd);
+      await diffView.update(processedContent, true);
+      const edits = await diffView.saveChanges(path, processedContent);
+      return { success: true, ...edits };
+    }
   } catch (error) {
-    DiffView.revertAndClose(toolCallId);
+    if (isNotebook) {
+      NotebookDiffView.revertAndClose(toolCallId);
+    } else {
+      DiffView.revertAndClose(toolCallId);
+    }
     throw error;
   }
 };
