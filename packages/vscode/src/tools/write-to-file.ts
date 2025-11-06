@@ -113,12 +113,11 @@ export const writeToFile: ToolFunctionType<ClientTools["writeToFile"]> = async (
       await nbView.update(processedContent, true);
       const edits = await nbView.saveChanges(path, processedContent);
       return { success: true, ...edits };
-    } 
+    }
     const diffView = await DiffView.getOrCreate(toolCallId, path, cwd);
     await diffView.update(processedContent, true);
     const edits = await diffView.saveChanges(path, processedContent);
     return { success: true, ...edits };
-    
   } catch (error) {
     if (isNotebook) {
       NotebookDiffView.revertAndClose(toolCallId);

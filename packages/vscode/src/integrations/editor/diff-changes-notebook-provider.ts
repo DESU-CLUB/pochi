@@ -21,13 +21,17 @@ export class DiffModifiedNotebookProvider
     { isReadonly: true },
   );
 
-  setForFile(id: string, path: string, data: Uint8Array, version: number = 0) {
+  setForFile(id: string, path: string, data: Uint8Array, version = 0) {
     const key = `${id}:${version}`;
     this.content.set(key, data);
     this.onDidChangeFileEmitter.fire([
       {
         type: vscode.FileChangeType.Changed,
-        uri: vscode.Uri.from({ scheme: DiffModifiedNotebookProvider.scheme, path, query: key }),
+        uri: vscode.Uri.from({
+          scheme: DiffModifiedNotebookProvider.scheme,
+          path,
+          query: key,
+        }),
       },
     ]);
   }
@@ -78,5 +82,3 @@ export class DiffModifiedNotebookProvider
     this.onDidChangeFileEmitter.dispose();
   }
 }
-
-

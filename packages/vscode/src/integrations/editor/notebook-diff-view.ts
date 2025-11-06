@@ -199,7 +199,9 @@ export class NotebookDiffView implements vscode.Disposable {
         if (data) {
           const fullRange = new vscode.NotebookRange(0, nb.cellCount);
           const ws = new vscode.WorkspaceEdit();
-          ws.set(nb.uri, [vscode.NotebookEdit.replaceCells(fullRange, data.cells)]);
+          ws.set(nb.uri, [
+            vscode.NotebookEdit.replaceCells(fullRange, data.cells),
+          ]);
           await vscode.workspace.applyEdit(ws);
         }
       } catch (err) {
@@ -232,7 +234,8 @@ export class NotebookDiffView implements vscode.Disposable {
     const preSaveContent = updatedDocument.notebookType;
     if (updatedDocument.isDirty) {
       await updatedDocument.save();
-    }    const postSaveContent = updatedDocument.notebookType;
+    }
+    const postSaveContent = updatedDocument.notebookType;
     const editSummary = this.getEditSummary(
       this.originalContent || "",
       postSaveContent,
