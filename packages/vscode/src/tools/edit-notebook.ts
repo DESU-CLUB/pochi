@@ -1,4 +1,5 @@
 import * as fs from "node:fs/promises";
+import { NotebookDiffView } from "@/integrations/editor/notebook-diff-view";
 import {
   editNotebookCell,
   parseNotebook,
@@ -10,7 +11,7 @@ import type { ClientTools, ToolFunctionType } from "@getpochi/tools";
 
 export const editNotebook: ToolFunctionType<
   ClientTools["editNotebook"]
-> = async ({ path: filePath, cellId, content }, { cwd }) => {
+> = async ({ path: filePath, cellId, content }, { cwd, toolCallId, nonInteractive, abortSignal }) => {
   try {
     const absolutePath = resolvePath(filePath, cwd);
     validateNotebookPath(absolutePath);
@@ -20,10 +21,27 @@ export const editNotebook: ToolFunctionType<
     const updatedNotebook = editNotebookCell(notebook, cellId, content);
     const serialized = serializeNotebook(updatedNotebook);
 
-    await fs.writeFile(absolutePath, serialized, "utf-8");
+    if (nonInteractive) {
+      await fs.writeFile(absolutePath, serialized, "utf-8");
+      return { success: true };
+    }
+
+    // Interactive: show in NotebookDiffView and save via VS Code
+    const nbView = await NotebookDiffView.getOrCreate(
+      toolCallId,
+      filePath,
+      cwd,
+    );
+    await nbView.update(serialized, true, abortSignal);
+    await nbView.saveChanges(filePath, serialized);
 
     return { success: true };
   } catch (error) {
+    try {
+      if (toolCallId) {
+        NotebookDiffView.revertAndClose(toolCallId);
+      }
+    } catch {}
     return { success: false };
   }
 };

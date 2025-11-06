@@ -1,4 +1,5 @@
 import { DiffView } from "@/integrations/editor/diff-view";
+import { NotebookDiffView } from "@/integrations/editor/notebook-diff-view";
 import { createPrettyPatch, ensureFileDirectoryExists } from "@/lib/fs";
 import { getLogger } from "@/lib/logger";
 import { getEditSummary, writeTextDocument } from "@/lib/write-text-document";
@@ -24,6 +25,7 @@ export const previewMultiApplyDiff: PreviewToolFunctionType<
     return { error: "Invalid arguments for previewing multiApplyDiff tool." };
   }
 
+  let isNotebook = false;
   try {
     const resolvedPath = resolvePath(path, cwd);
     const fileUri = vscode.Uri.file(resolvedPath);
@@ -39,16 +41,30 @@ export const previewMultiApplyDiff: PreviewToolFunctionType<
       return { success: true, _meta: { edit, editSummary } };
     }
 
-    const diffView = await DiffView.getOrCreate(toolCallId, path, cwd);
-    await diffView.update(
-      updatedContent,
-      state !== "partial-call",
-      abortSignal,
-    );
+    isNotebook = resolvedPath.toLowerCase().endsWith(".ipynb");
+    if (isNotebook) {
+      const nbView = await NotebookDiffView.getOrCreate(toolCallId, path, cwd);
+      await nbView.update(
+        updatedContent,
+        state !== "partial-call",
+        abortSignal,
+      );
+    } else {
+      const diffView = await DiffView.getOrCreate(toolCallId, path, cwd);
+      await diffView.update(
+        updatedContent,
+        state !== "partial-call",
+        abortSignal,
+      );
+    }
     return { success: true };
   } catch (error) {
     if (state === "call") {
-      DiffView.revertAndClose(toolCallId);
+      if (isNotebook) {
+        NotebookDiffView.revertAndClose(toolCallId);
+      } else {
+        DiffView.revertAndClose(toolCallId);
+      }
     }
     throw error;
   }
@@ -63,6 +79,7 @@ export const multiApplyDiff: ToolFunctionType<
   { path, edits },
   { toolCallId, abortSignal, nonInteractive, cwd },
 ) => {
+  let isNotebook = false;
   try {
     const resolvedPath = resolvePath(path, cwd);
     const fileUri = vscode.Uri.file(resolvedPath);
@@ -87,14 +104,26 @@ export const multiApplyDiff: ToolFunctionType<
       return { success: true, ...edits };
     }
 
-    const diffView = await DiffView.getOrCreate(toolCallId, path, cwd);
-    await diffView.update(updatedContent, true);
-    const editsResult = await diffView.saveChanges(path, updatedContent);
+    isNotebook = resolvedPath.toLowerCase().endsWith(".ipynb");
+    let editsResult;
+    if (isNotebook) {
+      const nbView = await NotebookDiffView.getOrCreate(toolCallId, path, cwd);
+      await nbView.update(updatedContent, true);
+      editsResult = await nbView.saveChanges(path, updatedContent);
+    } else {
+      const diffView = await DiffView.getOrCreate(toolCallId, path, cwd);
+      await diffView.update(updatedContent, true);
+      editsResult = await diffView.saveChanges(path, updatedContent);
+    }
 
     logger.info(`Successfully applied multiple diffs to ${path}`);
     return { success: true, ...editsResult };
   } catch (error) {
-    DiffView.revertAndClose(toolCallId);
+    if (isNotebook) {
+      NotebookDiffView.revertAndClose(toolCallId);
+    } else {
+      DiffView.revertAndClose(toolCallId);
+    }
     throw error;
   }
 };
