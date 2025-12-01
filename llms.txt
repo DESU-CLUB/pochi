@@ -873,6 +873,109 @@ Ollama is a tool that allows you to run large language models locally on your ma
 ```
 
 
+# Parallel Agents
+URL: /parallel-agents
+Run multiple AI agents concurrently to accelerate development and tackle complex tasks.
+***
+
+title: "Parallel Agents"
+description: "Run multiple AI agents concurrently to accelerate development and tackle complex tasks."
+icon: "GitMerge"
+----------------
+
+# Parallel Agents
+
+Most coding assistants can handle one task at a time. But real projects often need multiple agents exploring, refactoring, and developing different features in parallel - across different branches or experiments.
+That's why we built **Parallel Agents**.
+
+**Parallel Agents** let you run multiple Pochi agents concurrently, each inside its own Git worktree - isolated but synchronized with the same repository.
+Each agent can explore the code base, develop different PRs, or test different ideas in parallel without interfering with each other, while you can check their works and manage them in Pochi extensions.
+
+Pochi Parallel Agents has the following features:
+
+* **Worktree Integration:** Leverage the Git worktree feature to gain an isolated env, did not recreate the wheel again.
+* **Multi-to-Multi Execution:**  Tasks from Pochi could run in different worktree or the same one.
+* **Task Management:** All tasks can be managed on the Pochi sidebar.
+* **Integrated UX:** Review agents' works and open the terminal from one click.
+* **VSCode Native:** Create new Agents directly from the Repository manage view from VSCode.
+
+## Demo and Real World Use Cases
+
+Let's go through the features of **Parallel Agents** by showing the real world workflow while we are developing Pochi.
+For the following demo, we will work on those two issues:
+
+1. [https://github.com/TabbyML/pochi/issues/619](https://github.com/TabbyML/pochi/issues/619)
+2. [https://github.com/TabbyML/pochi/issues/654](https://github.com/TabbyML/pochi/issues/654)
+
+Meanwhile, we'll explore together how worktree feature is implemented.
+
+We could operate on the default worktree directly; however, since those two issues are independent, we prefer to create a separate worktree for each.
+
+### Creating Worktree
+
+There are two ways to create a new Worktree,
+
+1. Create from Pochi sidebar directly
+
+<div
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/1HgO1JdMswvFOKhSwRQCU3pFOIv2lKRbB/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Create Pochi Tasks"
+  />
+</div>
+
+2. Create from VSCode Repository management
+   You can first create a new worktree in VSCode Source Control Panel. Then manually link this worktree to a branch, and open this worktree in Pochi.
+
+<div align="center">
+  ![Create Worktree](../assets/images/create-worktree.png)
+</div>
+
+<div align="center">
+  ![Open Worktree in Pochi](../assets/images/worktree-pochi.png)
+</div>
+
+In both cases, Pochi will create and check out the branch at the specified disk path as a worktree. You can then perform any action as if it were a standard Git repository, as an independent dev environment in each worktree.
+
+### Create Task in Pochi
+
+Now we are ready to initiate tasks in each worktree to let them run in parallel. You'd see that once a task is initiated, Pochi opens a new tab for each task, and you can switch between different tabs to monitor the progress of each task.
+
+<div align="center">
+  ![Parallel Tasks](../assets/images/parallel-tasks.png)
+</div>
+
+### Interaction with Tasks
+
+When you click on the task, Pochi will open the specific task, allowing you to interact with it.
+
+<div align="center">
+  ![Interact with Tasks](../assets/images/task-interaction.png)
+</div>
+
+For instance, the task `fix-issue-654` is now complete. We can review the modifications by selecting `Diff worktree with origin/main`, and Pochi will open a tab showing all the files changes.
+
+Or choose `Open in Integrated Terminal` to launch the terminal within this worktree for command execution.
+
+
 # Permissions
 URL: /permissions
 Manage Pochi's auto-approval settings
@@ -1108,8 +1211,16 @@ Pochi uses a state-of-the-art model that adapts to your coding patterns in real 
 drawing on recent edits, diagnostics, and surrounding context to generate helpful,
 relevant completions right in your editor.
 
+The suggestion can be rendered as a diff preview, showing exactly what changes will be made to your code.
+
 <div align="center">
-  ![Tab completion showing inline suggestions](../assets/images/completion.png)
+  ![Tab Completion showing suggestion via diff](../assets/images/tab-completion-diff.png)
+</div>
+
+Alternatively, suggestions can appear as ghost text inline with your code.
+
+<div align="center">
+  ![Tab Completion showing suggestion via ghost text](../assets/images/tab-completion-ghost-text.png)
 </div>
 
 ### Multi-Language Support
@@ -1126,49 +1237,38 @@ Works across popular programming languages including:
 
 ## Using Tab Completion
 
-### Basic Usage
-
-1. Start typing your code
-2. Pochi will show inline suggestions in gray text
-3. Press `Tab` to accept the suggestion
-4. Press `Escape` to dismiss the suggestion
+Just start typing. Pochi will surface suggestions automatically. The more you use it, the more it understands your codebase, thus suggesting better edits.
 
 ### Keyboard Shortcuts
 
-| Key            | Action                                      |
-| -------------- | ------------------------------------------- |
-| `Tab`          | Accept the current suggestion               |
-| `Escape`       | Dismiss the suggestion                      |
-| `Ctrl/Cmd + →` | Accept word by word                         |
-| `Alt + ]`      | Next suggestion (if multiple available)     |
-| `Alt + [`      | Previous suggestion (if multiple available) |
+| Key       | Action                                      |
+| --------- | ------------------------------------------- |
+| `Tab`     | Accept the current suggestion               |
+| `Escape`  | Dismiss the suggestion                      |
+| `Alt + ]` | Next suggestion (if multiple available)     |
+| `Alt + [` | Previous suggestion (if multiple available) |
 
-## Tab Completion Model Settings
+## Status Bar Item
 
-You can customize the code completion provider in your VS Code settings, allowing you to switch between different models, including those running on your local machine.
+The status bar item shows the status of Pochi Tab Completion. It indicates whether the feature is enabled, disabled, or if any errors have occurred.
 
-By default, Pochi uses its own hosted code completion model. Alternatively, you can configure Pochi to use any OpenAI-compatible server that provides a Fill-in-the-Middle (FIM) completion model.
+### Disable/Enable
 
-Here is an example configuration for a local OpenAI-compatible server running `qwen3-coder-30b-a3b` on port 8000:
+You can click the status bar item to toggle Pochi Tab Completion on and off.
 
-```json
-  "pochi.advanced": {
-    "inlineCompletion": {
-      "provider": {
-        "type": "openai",
-        "baseURL": "http://127.0.0.1:8000/v1",
-        "apiKey": "",
-        "model": "qwen3-coder-30b-a3b",
-        "promptTemplate": "<|fim_prefix|>{{prefix}}<|fim_suffix|>{{suffix}}<|fim_middle|>"
-      }
-    }
-  },
-```
+### Feature Conflicts
 
-* **baseURL**: The base URL of the OpenAI-compatible server.
-* **apiKey**: The API key for the server. If not set, Pochi will use the `POCHI_CODE_COMPLETION_OPENAI_API_KEY` environment variable. This can be left empty if the server does not require an API key.
-* **model**: The name of the FIM completion model to use.
-* **promptTemplate**: The prompt template for FIM completion. It must include `{{prefix}}` and `{{suffix}}` placeholders.
+Pochi's Tab Completion feature may conflict with other extensions that provide code completions, such as GitHub Copilot. If you encounter issues, you can disable conflicting features to use Pochi Tab Completion.
+
+<div align="center">
+  ![Resolve Conflicts](../assets/images/tab-completion-resolve-conflicts.png)
+</div>
+
+## Tab Completion Model
+
+Pochi uses its own hosted, state-of-the-art tab completion model optimized for speed and accuracy.
+
+We are actively working on allowing you to customize Tab Completion providers in VS Code settings. In future versions, you'll be able to use different models, including those running on your local machine.
 
 ***
 
@@ -1903,6 +2003,485 @@ We’re actively working on a series of UX improvements to the VS Code chat side
 Stay tuned for the upcoming update!
 
 
+# Launching Parallel Agents
+URL: /developer-updates/2025-11-11-launch-parallel-agent
+
+***
+
+## title: Launching Parallel Agents
+
+# Launching Parallel Agents
+
+Teams rarely work on a single task at a time. You might be part-way through a feature when a bug report arrives, someone needs a small refactor reviewed, or a documentation fix is pending. Most tools and workflows force these tasks to share one working state.
+
+So you end up switching branches, stashing and popping changes, resetting your workspace, and trying to hold the original task in your head. This is context switching, and it’s one of the biggest hidden costs in software development.
+
+We released **Parallel Agents** to remove that cost. Each agent runs in its own Git worktree, which isolates the task’s state from the rest of your work.
+
+<div class="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg">![Parallel Agent](./images/parallel-agents-changelog.png)</div>
+
+A great example would be to run the same task with different models to pick the best response. Won’t that be a faster and much better experience - all within the same timeframe?
+
+This is different from other existing solutions, which operate inside a single editor tab. In those tools, you’re effectively working in one tab at a time: switching tasks means switching the state of the same working directory and the same conversation.
+
+On the other hand, **Parallel Agents** in Pochi keep tasks fully isolated by running each one in its own Git worktree. You can keep multiple tasks active at once and switch between them without stashing or losing context.
+
+## How to use?
+
+1. You can create a worktree from the Pochi sidebar. Once a worktree exists, starting a task in that worktree opens it as its own tab in Pochi.
+2. When a task finishes, use the diff view to review its changes. If it looks good, create a PR from that worktree.
+
+## When to use Parallel Agents
+
+**Parallel Agents** are most useful when you want to avoid breaking focus on ongoing work: quick bugfixes during feature development, long-running refactors that you want to keep separate, documentation changes that happen alongside coding, or letting an AI assistant explore broader changes in a sandbox.
+
+On the other hand, if a change is meant to be reviewed and merged as a single unit, keeping it on one branch remains simpler.
+
+Here is the demo showing the feature in action:
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/1JB3viOn2nawUX5JNMdGVHWPVJvBraJTY/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Parallel Agents Demo"
+  />
+</div>
+
+Read the full documentation **[here](https://docs.getpochi.com/parallel-agents/)**.
+
+
+# Weekly Update
+URL: /developer-updates/2025-11-13-weekly-update-10
+
+***
+
+## title: Weekly Update #10
+
+# Weekly Update #10
+
+### TL;DR
+
+We added modular `@import` rules and fixed PDF handling in `readFile`. Behind the scenes, we’re preparing two big improvements: smart task notifications and a refreshed, faster tab-completion experience.
+
+### ✨ Enhancements
+
+* **Modular Rules with `@import` Syntax:** You can now split and organize large rule files by importing other markdown files using the `@` prefix (e.g. `@./rules/api-guidelines.md`). Pochi will stitch them together, managing complex configurations for your multi-agent or multi-project setups. **[#540](https://github.com/TabbyML/pochi/issues/540)**
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/18s3_3KyoA02aUefK7zmMJirWljW_QOFF/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Modular rules"
+  />
+</div>
+
+### 🐛 Bug fixes
+
+* **PDF Handling in `readFile`:** Resolved a bug that caused `readFile` to return PDF files as plain text. **[#591](https://github.com/TabbyML/pochi/issues/591)**
+
+### 🔥 Preview
+
+* **Smart Task Notifications:** Pochi will now show real-time notifications when a task needs your input, completes, or fails. Notifications will include a “View Details” button to jump directly into the task, and will be automatically suppressed when the task panel is already open to avoid duplicates.
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/1ytoU6d11rd-Sv-jQsqLmOvI_WxKqqwzO/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="`readfile`tool demo"
+  />
+</div>
+
+* We’re also preparing an upgrade to our tab completion system to make suggestions feel faster and more intuitive. More details coming soon!
+
+
+# Weekly Update
+URL: /developer-updates/2025-11-21-weekly-update-11
+
+***
+
+## title: Weekly Update #11
+
+# Weekly Update #11
+
+### TL;DR
+
+This week was a big one.
+
+We shipped Next Edit Suggestions (one of our biggest upgrades so far), along with real-time task notifications and cleaner diff views. Pochi now feels smarter, tighter, and much more intuitive across the codebase.
+
+### 🚀 Features
+
+* **Next Edit Suggestions (NES):** We’ve introduced our internal edit model powering Next Edit Suggestion (NES). It is an upgrade to Tab Completion that predicts the next change your code needs, wherever it lives. It learns from your recent edits, understands how your file is evolving, and auto-surfaces likely follow-up edits. <br /> <br />We’ve published a deep-dive on how we trained and evaluated the edit model, and how it powers Pochi's experience. You can read more **[here](./how-we-created-nes-model.mdx)**.
+
+<div class="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg">![NES Demo](./images/nes-demo-blog.gif)</div>
+
+* **Pop-up Notifications for Task Status Changes:** Pochi now shows real-time notifications when a task completes, fails, or needs your input. Each notification includes a “View Details” button that jumps directly into the task. In the case the task panel is already open, we suppress duplicable notifications to reduce noise.
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/1ytoU6d11rd-Sv-jQsqLmOvI_WxKqqwzO/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Task notifications"
+  />
+</div>
+
+* **Gemini 3 Support:** We’ve added support for Gemini 3 Pro alongside 2.5 Pro. The UI for model selection is updated and ready for you to take over!
+  <div class="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg">![Gemini 3 Support](./images/gemini-3pro-support.png)</div>
+
+### ✨ Enhancements
+
+* **Line Wrap Toggle in Code Blocks:** We added a line wrap toggle to the code block component in the VS Code extension. This way, long lines inside diffs and model edits are now way easier to read, especially when reviewing wide changes across generated code.
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/1MYevQHoKri44vn4UCe7zvNGJqkXJNfQ4/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Line Wrap Toggle in Code Blocks:"
+  />
+</div>
+
+### 🔥 Preview
+
+* We’re actively working on a set of UX upgrades for the VS Code sidebar - things like grouping tasks by worktree, cleaner task headers, and a diff-summary panel that shows all file edits at a glance. More on this in an upcoming update.
+
+
+# Weekly Update
+URL: /developer-updates/2025-11-28-weekly-update-12
+
+***
+
+## title: Weekly Update #12
+
+# Weekly Update #12
+
+### TL;DR
+
+This weeks update is packed with improvements to task visibility, worktree workflows, and NES accuracy. We also made foundational changes to how tasks are stored, which sets us up for upcoming GitHub and multi-worktree features.
+
+<Callout type="info" title="Breaking Change: Task list reset in v0.16.0">
+  We introduced a breaking change in v0.16.0 that may result in the loss of the task list after upgrading. No action is needed as new tasks will behave normally going forward.
+</Callout>
+
+### 🚀 Features
+
+* **Diff Summary Panel for Task Changes:** We added a diff summary panel inside each task, showing all file edits made during execution. You can now review per-file additions/deletions, inspect the total change summary, and undo changes directly from the panel itself. **[#728](https://github.com/TabbyML/pochi/issues/728)**
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/11Z1go6JzvuQ-uOijAyOd8cZ0lmVd4zBx/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Diff Summary Panel for Task Changes"
+  />
+</div>
+
+### ✨ Enhancements
+
+* **Improved Visibility into Task Execution:** Tasks now display real-time execution details, including active tool calls, subtasks, and streaming progress to make task behavior easier to understand at a glance. This brings much clearer visibility into what Pochi is doing while a task runs. **[#675](https://github.com/TabbyML/pochi/issues/675)**
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/1FV0KxcbzgcPbTKCfa3js9zaZv5PoOCr0/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Improved Visibility into Task Execution"
+  />
+</div>
+
+* **Tasks grouped by worktree:** Pochi automatically groups tasks by their associated Git worktree with active worktrees at the top and deleted worktrees collapsed into a dedicated section. Each worktree shows its own tasks, status, and metadata which makes it much easier to manage parallel workstreams and multiple agents. **[#676](https://github.com/TabbyML/pochi/issues/676)**
+  <div class="w-3/6 md:ml-8 *:shadow-xl/30 *:rounded-lg">![Tasks grouped by worktree](./images/tasks-grouped-by-worktree.png)</div>
+
+* **Diff Summary on Task List Item:** Task rows now display git diff summaries (e.g. `+23 -5`) so you can instantly see the size and impact of each task’s changes across multiple worktrees. **[#674](https://github.com/TabbyML/pochi/issues/674)**
+  <div class="w-3/6 md:ml-8 *:shadow-xl/30 *:rounded-lg">![Diff Summary on Task List Item](./images/diff-summary-on-task-list-item.png)</div>
+
+* **Worktree-aware task tabs:** Pochi now opens tasks from the same Git worktree in the same VS Code tab group, and tasks from different worktrees in separate tab groups. This keeps parallel branches visually separated while you work. **[#677](https://github.com/TabbyML/pochi/issues/677)**
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/1Q-i632-wzbT04-HkWukqXGst7QKNn-LA/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Worktree-aware task tabs"
+  />
+</div>
+
+* **Unread Task Indicators:** We added unread indicators to the task list so you never miss when a background task finishes or fails. Tasks that complete while you’re looking elsewhere now show a small dot until you open them, making it much easier to track updates. **[#673](https://github.com/TabbyML/pochi/issues/673)**
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/1XCqsNtZI-_I7mon0CIyIKpAF8p_BmbEt/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Unread Task Indicators"
+  />
+</div>
+
+* **Enhanced NES prompting with additional local code context:** NES now includes richer local code context in its prompt, improving accuracy for predictions that depend on nearby functions, variables, or imports. **[#727](https://github.com/TabbyML/pochi/issues/727)**
+
+### 🔥 Preview
+
+* We’re actively working on GitHub PR creation and status, multi-worktree task execution, and GitHub/Linear issue linking - all designed to make Pochi even more powerful for real engineering workflows.
+
+
+# NES Series (Part 1): The Edit Model Behind Tab Completion
+URL: /developer-updates/how-we-created-nes-model
+Inside the engineering behind how we trained our next edit model
+***
+
+title: 'NES Series (Part 1): The Edit Model Behind Tab Completion'
+description: "Inside the engineering behind how we trained our next edit model"
+image: "/og-image/nes-part-1-og-image.png"
+------------------------------------------
+
+# NES Series (Part 1): The Edit Model Behind Tab Completion
+
+In this post, we’re introducing our internal edit model, the foundation behind Next Edit Suggestion (NES). It’s an upgrade to Tab completion, designed to predict the next change your code needs, wherever it lives.
+
+Technically this is much harder to achieve, since NES considers the entire file plus your recent edit history and predicts how your code is likely to evolve: where the next change should happen, and what that change should be.
+
+![NES Cover Image](./images/cover-nes.png)
+
+Other editors have explored versions of next-edit prediction, but models have evolved a lot, and so has our understanding of how people actually write code.
+
+As an open-source team, we want to share this work transparently. This is the first post in our "Next Edit Suggestion" series, where we walk you through how we trained the underlying model to how it powers real-time editing inside the extension.
+
+![NES Demo](./images/nes-demo-blog.gif)
+
+## How We Train the Edit Model
+
+When we decided to build NES, one of the first pressing questions on our mind was: What kind of data actually teaches a model to make good edits?
+
+It turned out that real developer intent is surprisingly hard to capture. As anyone who’s peeked at real commits knows, developer edits are messy. Pull requests bundle unrelated changes, commit histories jump around, and the sequences of edits often skip the small, incremental steps engineers actually take when exploring or fixing code.
+
+### The Training Process
+
+To train an edit model, we format each example using special edit tokens. These tokens tell the model:
+
+* What part of the file is editable
+* The user’s cursor position
+* What the user has edited so far
+* What the next edit should be inside that region only
+
+Unlike chat-style models that generate free-form text, NES is trained to predict the next code edit inside the editable region.
+
+Below is an example of how NES predicts the next edit:
+
+![SFT conversion image](./images/sft-conversion-image.png)
+
+In the image above, the developer makes the first edit allowing the model to capture the intent of the user. The `editable_region` markers define everything between them as the editable zone. The `user_cursor_is_here` token shows the model where the user is currently editing.
+
+NES infers the transformation pattern (capitalization in this case) and applies it consistently as the next edit sequence.
+
+To support this training format, we used **[CommitPackFT](https://huggingface.co/datasets/bigcode/commitpackft)** and **[Zeta](https://huggingface.co/datasets/zed-industries/zeta)** as data sources. We normalized this unified dataset into the same Zeta-derived edit-markup format as described above and applied filtering to remove non-sequential edits using a small in-context model (GPT-4.1 mini).
+
+## Choosing the Base Model for NES
+
+With the training format and dataset finalized, the next major decision was choosing what base model to fine-tune. Initially, we considered both open-source and managed models, but ultimately chose Gemini 2.5 Flash Lite for two main reasons:
+
+* **Easy serving:** Running an OSS model would require us to manage its inference and scalability in production. For a feature as latency-sensitive as Next Edit, these operational pieces matter as much as the model weights themselves. Using a managed model helped us avoid all these operational overheads.
+
+* **Simple supervised-fine-tuning:** We fine-tuned NES using **[Google’s Gemini Supervised Fine-Tuning (SFT) API](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models/gemini-use-supervised-tuning)**, with no training loop to maintain, no GPU provisioning, and at the same price as the regular Gemini inference API. Under the hood, Flash Lite uses LoRA (Low-Rank Adaptation), which means we update only a small set of parameters rather than the full model. This keeps NES lightweight and preserves the base model’s broader coding ability.
+
+Overall, in practice, using Flash Lite gave us model quality comparable to strong open-source baselines, with the obvious advantage of far lower operational costs. We can  , keeping the model stable across versions.
+
+### Why this matters for you
+
+Using Flash Lite directly improves the user experience in the editor. As a user, you can expect faster responses and likely lower compute cost (which can translate into cheaper product).
+
+And since fine-tuning is lightweight, we can roll out frequent improvements, providing a more robust service with less risk of downtime, scaling issues, or version drift; meaning greater reliability for everyone.
+
+## How we evaluated the model
+
+We evaluated our edit model using a single metric: LLM-as-a-Judge, powered by **Gemini 2.5 Pro**. This judge model evaluates whether a predicted edit is semantically correct, logically consistent with recent edits, and appropriate for the given context. This is unlike token-level comparisons and makes it far closer to how a human engineer would judge an edit.
+
+In practice, this gave us an evaluation process that is scalable, automated, and far more sensitive to intent than simple string matching. It allowed us to run large evaluation suites continuously as we retrain and improve the model.
+
+## Enhancing Context at Inference
+
+Training and evaluation only define what the model knows in theory. To make Next Edit Suggestions feel alive inside the editor, the model needs to understand what you are doing right now. So at inference time, we give the model more than just the current file snapshot. We also send:
+
+1. Your recent edit history
+   Wrapped in `<|edit_history|>`, this gives the model a short story of your current flow: what changed, in what order, and what direction the code seems to be moving.
+
+2. Additional semantic context
+   Added via `<|additional_context|>`, this might include type signatures, documentation, or relevant parts of the broader codebase. It’s the kind of stuff you would mentally reference before making the next edit.
+
+Here’s a small example image showing the full inference-time context with the edit history, additional context, and the live editable region which the NES model receives:
+
+![Additional context while predicting the next edit](./images/additional-context-image.png)
+
+NES combines these inputs to infer the user’s intent from earlier edits and predict the next edit inside the editable region only.
+
+In this post, we’ve focused on how the model is trained and evaluated. In the next post, we’ll go deeper into how these dynamic contexts are constructed, ranked, and streamed into the model to drive real-time, context-aware edit predictions.
+
+
 # Developer Updates
 URL: /developer-updates
 Weekly update notes from Pochi developers
@@ -1924,6 +2503,472 @@ Here you will find highlights on features, enhancements, and bug fixes, plus ins
   ### Sep 22, 2025
 
   --- */}
+
+## [Weekly Update #12](./2025-11-28-weekly-update-12)
+
+#### Nov 21, 2025
+
+# Weekly Update #12
+
+### TL;DR
+
+This weeks update is packed with improvements to task visibility, worktree workflows, and NES accuracy. We also made foundational changes to how tasks are stored, which sets us up for upcoming GitHub and multi-worktree features.
+
+<Callout type="info" title="Breaking Change: Task list reset in v0.16.0">
+  We introduced a breaking change in v0.16.0 that may result in the loss of the task list after upgrading. No action is needed as new tasks will behave normally going forward.
+</Callout>
+
+### 🚀 Features
+
+* **Diff Summary Panel for Task Changes:** We added a diff summary panel inside each task, showing all file edits made during execution. You can now review per-file additions/deletions, inspect the total change summary, and undo changes directly from the panel itself. **[#728](https://github.com/TabbyML/pochi/issues/728)**
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/11Z1go6JzvuQ-uOijAyOd8cZ0lmVd4zBx/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Diff Summary Panel for Task Changes"
+  />
+</div>
+
+### ✨ Enhancements
+
+* **Improved Visibility into Task Execution:** Tasks now display real-time execution details, including active tool calls, subtasks, and streaming progress to make task behavior easier to understand at a glance. This brings much clearer visibility into what Pochi is doing while a task runs. **[#675](https://github.com/TabbyML/pochi/issues/675)**
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/1FV0KxcbzgcPbTKCfa3js9zaZv5PoOCr0/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Improved Visibility into Task Execution"
+  />
+</div>
+
+* **Tasks grouped by worktree:** Pochi automatically groups tasks by their associated Git worktree with active worktrees at the top and deleted worktrees collapsed into a dedicated section. Each worktree shows its own tasks, status, and metadata which makes it much easier to manage parallel workstreams and multiple agents. **[#676](https://github.com/TabbyML/pochi/issues/676)**
+  <div class="w-3/6 md:ml-8 *:shadow-xl/30 *:rounded-lg">![Tasks grouped by worktree](./images/tasks-grouped-by-worktree.png)</div>
+
+* **Diff Summary on Task List Item:** Task rows now display git diff summaries (e.g. `+23 -5`) so you can instantly see the size and impact of each task’s changes across multiple worktrees. **[#674](https://github.com/TabbyML/pochi/issues/674)**
+  <div class="w-3/6 md:ml-8 *:shadow-xl/30 *:rounded-lg">![Diff Summary on Task List Item](./images/diff-summary-on-task-list-item.png)</div>
+
+* **Worktree-aware task tabs:** Pochi now opens tasks from the same Git worktree in the same VS Code tab group, and tasks from different worktrees in separate tab groups. This keeps parallel branches visually separated while you work. **[#677](https://github.com/TabbyML/pochi/issues/677)**
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/1Q-i632-wzbT04-HkWukqXGst7QKNn-LA/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Worktree-aware task tabs"
+  />
+</div>
+
+* **Unread Task Indicators:** We added unread indicators to the task list so you never miss when a background task finishes or fails. Tasks that complete while you’re looking elsewhere now show a small dot until you open them, making it much easier to track updates. **[#673](https://github.com/TabbyML/pochi/issues/673)**
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/1XCqsNtZI-_I7mon0CIyIKpAF8p_BmbEt/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Unread Task Indicators"
+  />
+</div>
+
+* **Enhanced NES prompting with additional local code context:** NES now includes richer local code context in its prompt, improving accuracy for predictions that depend on nearby functions, variables, or imports. **[#727](https://github.com/TabbyML/pochi/issues/727)**
+
+### 🔥 Preview
+
+* We’re actively working on GitHub PR creation and status, multi-worktree task execution, and GitHub/Linear issue linking - all designed to make Pochi even more powerful for real engineering workflows.
+
+***
+
+## [Weekly Update #11](./2025-11-21-weekly-update-11)
+
+#### Nov 21, 2025
+
+# Weekly Update #11
+
+### TL;DR
+
+This week was a big one.
+
+We shipped Next Edit Suggestions (one of our biggest upgrades so far), along with real-time task notifications and cleaner diff views. Pochi now feels smarter, tighter, and much more intuitive across the codebase.
+
+### 🚀 Features
+
+* **Next Edit Suggestions (NES):** We’ve introduced our internal edit model powering Next Edit Suggestion (NES). It is an upgrade to Tab Completion that predicts the next change your code needs, wherever it lives. It learns from your recent edits, understands how your file is evolving, and auto-surfaces likely follow-up edits. <br /> <br />We’ve published a deep-dive on how we trained and evaluated the edit model, and how it powers Pochi's experience. You can read more **[here](./how-we-created-nes-model.mdx)**.
+
+<div class="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg">![NES Demo](./images/nes-demo-blog.gif)</div>
+
+* **Pop-up Notifications for Task Status Changes:** Pochi now shows real-time notifications when a task completes, fails, or needs your input. Each notification includes a “View Details” button that jumps directly into the task. In the case the task panel is already open, we suppress duplicable notifications to reduce noise.
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/1ytoU6d11rd-Sv-jQsqLmOvI_WxKqqwzO/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Task notifications"
+  />
+</div>
+
+* **Gemini 3 Support:** We’ve added support for Gemini 3 Pro alongside 2.5 Pro. The UI for model selection is updated and ready for you to take over!
+  <div class="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg">![Gemini 3 Support](./images/gemini-3pro-support.png)</div>
+
+### ✨ Enhancements
+
+* **Line Wrap Toggle in Code Blocks:** We added a line wrap toggle to the code block component in the VS Code extension. This way, long lines inside diffs and model edits are now way easier to read, especially when reviewing wide changes across generated code.
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/1MYevQHoKri44vn4UCe7zvNGJqkXJNfQ4/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Line Wrap Toggle in Code Blocks:"
+  />
+</div>
+
+### 🔥 Preview
+
+* We’re actively working on a set of UX upgrades for the VS Code sidebar - things like grouping tasks by worktree, cleaner task headers, and a diff-summary panel that shows all file edits at a glance. More on this in an upcoming update.
+
+***
+
+## [NES Series (Part 1): The Edit Model Behind Tab Completion](./how-we-created-nes-model)
+
+#### Nov 19, 2025
+
+# NES Series (Part 1): The Edit Model Behind Tab Completion
+
+In this post, we’re introducing our internal edit model, the foundation behind Next Edit Suggestion (NES). It’s an upgrade to Tab completion, designed to predict the next change your code needs, wherever it lives.
+
+Technically this is much harder to achieve, since NES considers the entire file plus your recent edit history and predicts how your code is likely to evolve: where the next change should happen, and what that change should be.
+
+![NES Cover Image](./images/cover-nes.png)
+
+Other editors have explored versions of next-edit prediction, but models have evolved a lot, and so has our understanding of how people actually write code.
+
+As an open-source team, we want to share this work transparently. This is the first post in our "Next Edit Suggestion" series, where we walk you through how we trained the underlying model to how it powers real-time editing inside the extension.
+
+![NES Demo](./images/nes-demo-blog.gif)
+
+## How We Train the Edit Model
+
+When we decided to build NES, one of the first pressing questions on our mind was: What kind of data actually teaches a model to make good edits?
+
+It turned out that real developer intent is surprisingly hard to capture. As anyone who’s peeked at real commits knows, developer edits are messy. Pull requests bundle unrelated changes, commit histories jump around, and the sequences of edits often skip the small, incremental steps engineers actually take when exploring or fixing code.
+
+### The Training Process
+
+To train an edit model, we format each example using special edit tokens. These tokens tell the model:
+
+* What part of the file is editable
+* The user’s cursor position
+* What the user has edited so far
+* What the next edit should be inside that region only
+
+Unlike chat-style models that generate free-form text, NES is trained to predict the next code edit inside the editable region.
+
+Below is an example of how NES predicts the next edit:
+
+![SFT conversion image](./images/sft-conversion-image.png)
+
+In the image above, the developer makes the first edit allowing the model to capture the intent of the user. The `editable_region` markers define everything between them as the editable zone. The `user_cursor_is_here` token shows the model where the user is currently editing.
+
+NES infers the transformation pattern (capitalization in this case) and applies it consistently as the next edit sequence.
+
+To support this training format, we used **[CommitPackFT](https://huggingface.co/datasets/bigcode/commitpackft)** and **[Zeta](https://huggingface.co/datasets/zed-industries/zeta)** as data sources. We normalized this unified dataset into the same Zeta-derived edit-markup format as described above and applied filtering to remove non-sequential edits using a small in-context model (GPT-4.1 mini).
+
+## Choosing the Base Model for NES
+
+With the training format and dataset finalized, the next major decision was choosing what base model to fine-tune. Initially, we considered both open-source and managed models, but ultimately chose Gemini 2.5 Flash Lite for two main reasons:
+
+* **Easy serving:** Running an OSS model would require us to manage its inference and scalability in production. For a feature as latency-sensitive as Next Edit, these operational pieces matter as much as the model weights themselves. Using a managed model helped us avoid all these operational overheads.
+
+* **Simple supervised-fine-tuning:** We fine-tuned NES using **[Google’s Gemini Supervised Fine-Tuning (SFT) API](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models/gemini-use-supervised-tuning)**, with no training loop to maintain, no GPU provisioning, and at the same price as the regular Gemini inference API. Under the hood, Flash Lite uses LoRA (Low-Rank Adaptation), which means we update only a small set of parameters rather than the full model. This keeps NES lightweight and preserves the base model’s broader coding ability.
+
+Overall, in practice, using Flash Lite gave us model quality comparable to strong open-source baselines, with the obvious advantage of far lower operational costs. We can  , keeping the model stable across versions.
+
+### Why this matters for you
+
+Using Flash Lite directly improves the user experience in the editor. As a user, you can expect faster responses and likely lower compute cost (which can translate into cheaper product).
+
+And since fine-tuning is lightweight, we can roll out frequent improvements, providing a more robust service with less risk of downtime, scaling issues, or version drift; meaning greater reliability for everyone.
+
+## How we evaluated the model
+
+We evaluated our edit model using a single metric: LLM-as-a-Judge, powered by **Gemini 2.5 Pro**. This judge model evaluates whether a predicted edit is semantically correct, logically consistent with recent edits, and appropriate for the given context. This is unlike token-level comparisons and makes it far closer to how a human engineer would judge an edit.
+
+In practice, this gave us an evaluation process that is scalable, automated, and far more sensitive to intent than simple string matching. It allowed us to run large evaluation suites continuously as we retrain and improve the model.
+
+## Enhancing Context at Inference
+
+Training and evaluation only define what the model knows in theory. To make Next Edit Suggestions feel alive inside the editor, the model needs to understand what you are doing right now. So at inference time, we give the model more than just the current file snapshot. We also send:
+
+1. Your recent edit history
+   Wrapped in `<|edit_history|>`, this gives the model a short story of your current flow: what changed, in what order, and what direction the code seems to be moving.
+
+2. Additional semantic context
+   Added via `<|additional_context|>`, this might include type signatures, documentation, or relevant parts of the broader codebase. It’s the kind of stuff you would mentally reference before making the next edit.
+
+Here’s a small example image showing the full inference-time context with the edit history, additional context, and the live editable region which the NES model receives:
+
+![Additional context while predicting the next edit](./images/additional-context-image.png)
+
+NES combines these inputs to infer the user’s intent from earlier edits and predict the next edit inside the editable region only.
+
+In this post, we’ve focused on how the model is trained and evaluated. In the next post, we’ll go deeper into how these dynamic contexts are constructed, ranked, and streamed into the model to drive real-time, context-aware edit predictions.
+
+***
+
+## [Weekly Update #10](./2025-11-13-weekly-update-10)
+
+#### Nov 13, 2025
+
+# Weekly Update #10
+
+### TL;DR
+
+We added modular `@import` rules and fixed PDF handling in `readFile`. Behind the scenes, we’re preparing two big improvements: smart task notifications and a refreshed, faster tab-completion experience.
+
+### ✨ Enhancements
+
+* **Modular Rules with `@import` Syntax:** You can now split and organize large rule files by importing other markdown files using the `@` prefix (e.g. `@./rules/api-guidelines.md`). Pochi will stitch them together, managing complex configurations for your multi-agent or multi-project setups. **[#540](https://github.com/TabbyML/pochi/issues/540)**
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/18s3_3KyoA02aUefK7zmMJirWljW_QOFF/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Modular rules"
+  />
+</div>
+
+### 🐛 Bug fixes
+
+* **PDF Handling in `readFile`:** Resolved a bug that caused `readFile` to return PDF files as plain text. **[#591](https://github.com/TabbyML/pochi/issues/591)**
+
+### 🔥 Preview
+
+* **Smart Task Notifications:** Pochi will now show real-time notifications when a task needs your input, completes, or fails. Notifications will include a “View Details” button to jump directly into the task, and will be automatically suppressed when the task panel is already open to avoid duplicates.
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/1ytoU6d11rd-Sv-jQsqLmOvI_WxKqqwzO/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="`readfile`tool demo"
+  />
+</div>
+
+* We’re also preparing an upgrade to our tab completion system to make suggestions feel faster and more intuitive. More details coming soon!
+
+***
+
+## [Launching Parallel Agents](./2025-11-11-launch-parallel-agent)
+
+#### Nov 11, 2025
+
+# Launching Parallel Agents
+
+Teams rarely work on a single task at a time. You might be part-way through a feature when a bug report arrives, someone needs a small refactor reviewed, or a documentation fix is pending. Most tools and workflows force these tasks to share one working state.
+
+So you end up switching branches, stashing and popping changes, resetting your workspace, and trying to hold the original task in your head. This is context switching, and it’s one of the biggest hidden costs in software development.
+
+We released **Parallel Agents** to remove that cost. Each agent runs in its own Git worktree, which isolates the task’s state from the rest of your work.
+
+<div class="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg">![Parallel Agent](./images/parallel-agents-changelog.png)</div>
+
+A great example would be to run the same task with different models to pick the best response. Won’t that be a faster and much better experience - all within the same timeframe?
+
+This is different from other existing solutions, which operate inside a single editor tab. In those tools, you’re effectively working in one tab at a time: switching tasks means switching the state of the same working directory and the same conversation.
+
+On the other hand, **Parallel Agents** in Pochi keep tasks fully isolated by running each one in its own Git worktree. You can keep multiple tasks active at once and switch between them without stashing or losing context.
+
+## How to use?
+
+1. You can create a worktree from the Pochi sidebar. Once a worktree exists, starting a task in that worktree opens it as its own tab in Pochi.
+2. When a task finishes, use the diff view to review its changes. If it looks good, create a PR from that worktree.
+
+## When to use Parallel Agents
+
+**Parallel Agents** are most useful when you want to avoid breaking focus on ongoing work: quick bugfixes during feature development, long-running refactors that you want to keep separate, documentation changes that happen alongside coding, or letting an AI assistant explore broader changes in a sandbox.
+
+On the other hand, if a change is meant to be reviewed and merged as a single unit, keeping it on one branch remains simpler.
+
+Here is the demo showing the feature in action:
+
+<div
+  className="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg"
+  style={{
+  position: "relative",
+  paddingBottom: "53.7%",
+  marginBottom: 20,
+  height: 0,
+  overflow: "hidden",
+  maxWidth: "100%",
+}}
+>
+  <iframe
+    src="https://drive.google.com/file/d/1JB3viOn2nawUX5JNMdGVHWPVJvBraJTY/preview"
+    style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "none",
+    borderRadius: "8px",
+  }}
+    allowFullScreen
+    title="Parallel Agents Demo"
+  />
+</div>
+
+Read the full documentation **[here](https://docs.getpochi.com/parallel-agents/)**.
+
+***
 
 ## [Weekly Update #9](./2025-11-01-weekly-update-9)
 
@@ -2590,11 +3635,11 @@ icon: BookOpenText
 
 Welcome to the Pochi tutorials section. Here you will find step-by-step guides to help you get the most out of Pochi.
 
-* [Voice-Driven Development with Handy and Pochi](./handy)
-* [Visual Communication with Mermaid Graphs](./mermaid-graph)
+* [Build Your Own AI Teammate with Pochi in GitHub Actions](./pochi-github-actions)
 * [Connect to Tabby Server for Enhanced Enterprise Experience](./connect-to-tabby-server)
 * [Build a Custom MCP Server to Query Supabase with Natural Language in Pochi](./supabase-mcp-server)
-* [Build Your Own AI Teammate with Pochi in GitHub Actions](./pochi-github-actions)
+* [Visual Communication with Mermaid Graphs](./mermaid-graph)
+* [Voice-Driven Development with Handy and Pochi](./handy)
 
 
 # Visualizing the Dialogue: How Pochi Uses Mermaid Graphs to Communicate
@@ -2669,10 +3714,13 @@ And remember, this is a two-way conversation. If you ever feel that Pochi's plan
 
 # Build Your Own AI Teammate with Pochi in GitHub Actions
 URL: /tutorials/pochi-github-actions
-
+Learn how to use Pochi to automate GitHub Actions, PR reviews, CI/CD, and more.
 ***
 
-## title: 'Build Your Own AI Teammate with Pochi in GitHub Actions'
+title: 'Build Your Own AI Teammate with Pochi in GitHub Actions'
+description: "Learn how to use Pochi to automate GitHub Actions, PR reviews, CI/CD, and more."
+image: "/og-image/github-actions-with-pochi-architecture-og-image.png"
+----------------------------------------------------------------------
 
 # Build Your Own AI Teammate with Pochi in GitHub Actions
 
@@ -3648,10 +4696,13 @@ Try adding Pochi to your repository today with just one YAML file, and see how q
 
 # Build a Custom MCP Server to Query Supabase
 URL: /tutorials/supabase-mcp-server
-
+Build a custom MCP server in Pochi that lets you run natural language SQL queries on your Supabase database.
 ***
 
-## title: 'Build a Custom MCP Server to Query Supabase'
+title: 'Build a Custom MCP Server to Query Supabase'
+description: "Build a custom MCP server in Pochi that lets you run natural language SQL queries on your Supabase database."
+image: "/og-image/mcp-server-supabase-og-image.png"
+---------------------------------------------------
 
 # Build a Custom MCP Server to Query Supabase
 
