@@ -2390,6 +2390,340 @@ This weeks update is packed with improvements to task visibility, worktree workf
 * We’re actively working on GitHub PR creation and status, multi-worktree task execution, and GitHub/Linear issue linking - all designed to make Pochi even more powerful for real engineering workflows.
 
 
+# Weekly Update
+URL: /developer-updates/2025-12-04-weekly-update-13
+
+***
+
+## title: Weekly Update #13
+
+# Weekly Update #13
+
+### TL;DR
+
+This release brings some of our most practical updates yet: GitHub PR creation directly from worktrees, the ability to fork tasks when an agent drifts, clean task resets when context gets too large, and UI improvements that make multi-worktree setups far easier to manage.
+
+A small step closer to a more transparent, predictable coding agent.
+
+### 🚀 Features
+
+* **GitHub PR Workflow:** Pochi now understands Pull Requests per worktree. You can create PRs directly from the sidebar, and each worktree shows its associated PR, status (checks running, ready to merge, failed), and a breakdown of CI/Lint/Test results with quick links. PR state persists across sessions and stays linked to your worktree. **[#747](https://github.com/TabbyML/pochi/issues/747)**
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/github-pr.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+* **Fork a task:** You can now fork any task when things go off-track. If an agent drifts, a tool call fails, or you want to try a different direction, hit Fork to spin up a new task starting from the same point in the conversation. The original stays untouched. <br />
+
+  <video
+    controls
+    style={{
+    width: "100%",
+    borderRadius: "8px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+  }}
+  >
+    <source src="https://assets.docs.getpochi.com/forking.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+  This makes it much easier to debug issues, try alternative fixes, or compare multiple approaches side-by-side. One great use case would be to provide corrective feedback and guide the agent back on track without resetting the whole task. **[#455](https://github.com/TabbyML/pochi/issues/455)**
+
+* **Create a New Task with Previous Context:** When a task grows beyond \~50k tokens, Pochi now suggests New Task with Summary option. This creates a clean task with a summary of the previous conversation, helping you avoid hitting context limits while keeping all relevant information. **[#779](https://github.com/TabbyML/pochi/issues/779)**
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/task-summary.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+* **Auto Layout:** We added a new “Pochi Layout” toggle that instantly arranges your VS Code workspace into an optimized 3-pane layout: the Pochi task view on the left, code/diffs on the upper right, and terminals in a separate bottom-right tab group. This keeps terminal output isolated, prevents accidental layout shifts, and makes long-running tasks much easier to follow. **[#733](https://github.com/TabbyML/pochi/issues/733)**
+
+  <video
+    controls
+    style={{
+          width: "100%",
+          borderRadius: "8px",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+          }}
+  >
+    <source src="https://assets.docs.getpochi.com/pochi-auto-layout.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+### ✨ Enhancements
+
+* **Incremental Task IDs:** Tasks now receive a simple incremental ID (`#001`, `#002`, …) that is shared across all worktrees within the same Git repository. This makes tasks easier to reference while still preserving grouping by worktree in the UI. **[#746](https://github.com/TabbyML/pochi/issues/746)**
+  <div class="w-3/6 md:ml-8 *:shadow-xl/30 *:rounded-lg">![Auto increment](./images/auto-increment.png)</div>
+
+* **Optimistic Worktree Deletion:** Deleting a worktree now updates instantly in the UI, making the worktree disappears immediately without waiting for the backend to confirm. This makes task management feel faster and keeps the sidebar in sync with your intent.
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/delete-worktree.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+### 🔥 Preview
+
+* We’re working on multi-worktree task execution (run tasks in parallel across branches or models) and GitHub/Linear issue linking that lets Pochi automatically attach, track, and close issues as part of your workflow.
+
+
+# Weekly Update
+URL: /developer-updates/2025-12-11-weekly-update-14
+
+***
+
+## title: Weekly Update #14
+
+# Weekly Update #14
+
+### TL;DR
+
+This release introduces pair of upgrades aimed at making Pochi feel even more native to your development flow: GitHub Issue integration embedded right into task input, and a new `Cmd`/`Ctrl` + `Enter` shortcut to spin up worktrees easily.
+
+### 🚀 Features
+
+* **GitHub Issue Integration in Task Input:** You can now connect tasks directly to GitHub Issues. Typing `@#` opens an inline issue selector where you can search by issue ID, keyword, or scroll the dropdown list.<br />
+
+  All newly created issues are accessible within a minute. Once selected, issues appear as markdown badges and are sent as enriched context to the model.
+
+  **Note:** This feature requires GitHub CLI to be installed and authenticated. **[#833](https://github.com/TabbyML/pochi/issues/823)**
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/connect-to-github-issue.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+* **Create a New Worktree + Task with `Cmd`/`Ctrl` + `Enter`:** You can now start a brand-new worktree and task instantly using `Cmd`+`Enter` (macOS) or `Ctrl`+`Enter` (Windows/Linux). When you submit a prompt with this shortcut, Pochi automatically creates a new worktree with an auto-generated branch name (based on the task description, falling back to a timestamp when needed) and launches a new task inside it. <br />
+
+  The shortcut also works when submitting messages with file or image attachments. In existing tasks, `Cmd`/`Ctrl`+`Enter` continues to queue messages as before. **[#822](https://github.com/TabbyML/pochi/issues/822)** <br />
+
+  <video
+    controls
+    style={{
+    width: "100%",
+    borderRadius: "8px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+  }}
+  >
+    <source src="https://assets.docs.getpochi.com/create-worktree-with-command-click.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+
+# Weekly Update
+URL: /developer-updates/2025-12-19-weekly-update-15
+
+***
+
+## title: Weekly Update #15
+
+# Weekly Update #15
+
+### TL;DR
+
+This week includes several improvements and bug fixes across the VSCode extension and Web UI.
+
+A mix of workflow enhancements, UI polish, and reliability fixes landed. Here are the highlights:
+
+### ✨ Enhancements
+
+* **Improved Worktree Selector in VSCode Web UI:** We’ve added support for creating a new worktree with an auto generated name directly from the dropdown; an additional way other than `Cmd` + `Enter` a prompt. We also included tooltips and  renamed `main` worktree to `workspace` in the worktree list UI to better reflect its purpose. **[#896](https://github.com/TabbyML/pochi/issues/896)**, **[#875](https://github.com/TabbyML/pochi/issues/875)**
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/improved-worktree-ui-020.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+* **Open diff directly from a task:** Clicking a task with diffs now opens both the task and its diff panel, making it easier to review changes directly from the task list. **[#849](https://github.com/TabbyML/pochi/issues/849)**
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/open-diff-020.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+* **Quick task creation from the Worktree sidebar:** Added a `+` button next to each worktree to create a new task. **[#877](https://github.com/TabbyML/pochi/issues/877)**
+  <div class="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg">![Add new task via worktree](./images/new-task-worktree-020.png)</div>
+
+* **New keyboard shortcut:** Added a `Ctrl`+ \` keybinding in VSCode to instantly toggle the Pochi layout or open the terminal, improving keyboard-first navigation. This shortcut only exists as an advance configuration at the moment. To enable it, set `enablePochiLayoutKeybinding` in VSCode settings `pochi.advanced` section to `true`. **[#881](https://github.com/TabbyML/pochi/issues/881)**
+
+  ### 🐛 Bug Fixes
+
+* **Improved PR fetching reliability:** Fixed the GitHub PR fetching logic to exclude pull requests from forked repositories, ensuring only relevant PRs from the main repo appear in the Worktree/PR selector. **[#893](https://github.com/TabbyML/pochi/issues/893)**
+
+
+# NES Series (Part 2): Real-Time Context Management in Your Code Editor
+URL: /developer-updates/context-management-in-your-editor
+Learn how Pochi's NES model manages, ranks, and streams real-time edit context
+***
+
+title: 'NES Series (Part 2): Real-Time Context Management in Your Code Editor'
+description: "Learn how Pochi's NES model manages, ranks, and streams real-time edit context"
+image: "/og-image/nes-part-2-og-image.png"
+------------------------------------------
+
+# NES Series (Part 2): Real-Time Context Management in Your Code Editor
+
+In [Part 1](https://docs.getpochi.com/developer-updates/how-we-created-nes-model/), we covered how we trained our **NES model**, including topics such as the special tokens we use, the LoRA-based fine-tuning on Gemini Flash Lite, and how we utilized a judge LLM to evaluate the model.
+
+However, the end experience is far more than just building a good model. To make NES feel “intent-aware” inside your editor, we needed to give the model the right context at the right moment.
+
+![NES Cover Image](./images/cover-nes-part-2.png)
+
+In part 2, we’ll talk about that **runtime system**, or to be precise, how Pochi manages, ranks, and streams real-time edit context.  This is the core that helps NES to understand your intent and predict the next meaningful change.
+
+## Why Context Management Matters
+
+To start, let’s understand what context management is. In our case, it’s the layer between when a user starts typing and when the model is called with a well-formed prompt. During that in-between phase, the system gathers and prepares all the relevant context the LLM needs before we make a model request. <br />
+
+As to why it matters, imagine simply sending the entire file to the model on every keystroke. Not only will the model become slower and noisier, but you’d get unstable predictions and over 20 model calls per second, rendering the whole experience unusable.
+
+Instead, as previewed in the first article, we provide NES with three kinds of context:
+
+* **File Context:** text, filepath, cursor position, and the region to be edited
+* **Edit History:** record of recent edit steps
+* **Additional context from other files (optional):** e.g., functions/type declarations that help understand the current file <br />
+
+Each of these depends on clever filtering, segmentation, and timing - all of which happen in milliseconds during normal typing, as we’ll learn below.
+
+## 1. File Context: Finding the “live” region of code
+
+The first question to solve: “Where is the user editing right now?”. This is the foundation of every NES prompt. We answer this by gathering three quick pieces of information from the VS Code API:
+
+* The current file text
+* The file path
+* The user’s cursor position
+  Using this information, we compute what is called “the editable region”. This region is generally a small code window around the user’s cursor of \~10 lines.
+
+### Why \~10 lines?
+
+Because realistically, the next edit will almost always happen very close to where the user is already editing. This small window keeps the latency extremely low and is large enough to capture the structure around the edit. <br />
+
+And while we observe many models are over-eager and hallucinate changes elsewhere, our model is prevented from rewriting parts of the file the user wasn’t touching.
+
+An example of the editable region would be:
+![NES Cover Image](./images/file-context-editable-region.png)
+
+## 2. Edit history: Following the user’s intent over time
+
+So far, we have learnt where the user is currently editing, but we also need to understand how the code is changing over time. This is the part where edit history becomes important for the edit model to predict the user’s intent.  <br />
+
+Now, while we could use the VS Code API to register a listener for text change events, this ends up triggering an event for almost every keystroke. For example, if a user updates a type from string to email, it ends up producing \~6 events.
+![NES Cover Image](./images/text-change-events.png)
+
+These are not your meaningful edit steps. If we send this to the model, it will think each keystroke is a new “user intent” and will fire too many requests with wildly different predictions.  Instead, we reconstruct real edit steps using an internal change segmentation grouping.
+
+### How we group events into meaningful steps
+
+Since we cannot directly use the listener events, we decided to reduce them to events that represent edit steps. To achieve this, we group raw text-change events into undo-redo scale units. <br />
+
+Most editors record undo-redo steps on a word scale - for example, when a user inputs a sentence, an undo action will revert the last input word.
+In our case, for building edit prediction prompts, we do this on a larger scale.
+
+* Once we receive information on a user’s cursor position and tracking gets initiated, we create an edit steps list, where each step is an accumulation of several text change events. We found that 5 steps is the sweet spot to build a prompt. Anything more than that adds noise, and if less, loses the intent.
+* For each received text change event, we check if it is adjacent to the previous one. If yes, it belongs to the same edit step; otherwise, if it happens in a different part of the file, we consider it as a new edit step.
+  So continuing our example from earlier, if the user happens to add a `validateEmail` function next, we now have two edit steps in tracking.
+
+The first edit step:
+![NES Cover Image](./images/first-edit-step.png)
+
+The second edit step:
+![NES Cover Image](./images/second-edit-step.png)
+
+NES receives these steps wrapped inside `<|edit_history|>` token to learn how the code is evolving.
+
+### Special Case: Git Checkout Noise
+
+One edge case we uncovered is when users run `git checkout` to switch branches. This triggers massive file changes, none of which represent real user intent. If we were to treat these as edit steps, the model would end up thinking the user rewrote half the codebase. In order to avoid polluting the model direction, we:
+
+* Monitor the git status
+* Reset edit history when it changes (`checkout`, `pull`, `stash`)
+* Resume tracking after a few seconds
+
+## 3. Additional Context: Bringing in the rest of your project
+
+Code rarely exists in isolation. If you’re editing a function call, the model may need the definition. Likewise, if you’re modifying a type, the model may need the type declaration.<br />
+
+To give NES this kind of project-aware understanding, we pull additional snippets using the user’s installed language server. For this, we have two VS Code / LSP APIs:
+
+* We use `vscode.provideDocumentRangeSemanticTokens` to scan the editable region for each token type. Then we can find the tokens of interest, like a function, interface, or type defined in another file.
+* Next, we use the VS Code command `vscode.executeDefinitionProvider` to get the target location for the definition code snippets. This is like `Ctrl` / `Cmd` + clicking on a function to see the definition in another file.
+
+These two commands are provided by the language server (LSP), which should be available when the language plugin is installed in VS Code. We then extract the definition snippet and include it in `<|additional_context|>` token as shown below:
+![NES Cover Image](./images/additional-context.png)
+
+This gives the model the same context a developer would mentally reference before typing the next edit.
+
+**Note:** We do realise that some of the functions could be huge or a type might be hundreds of lines, with LSP sometimes returning entire class bodies. Therefore, to throttle/limit semantic snippet extraction, we’ve currently hard-coded a maximum of 2000 characters per snippet for now. <br />
+
+Meanwhile, in cases where good LSP support is lacking, like plain text, we don’t add any related snippets context to the prompt. Instead, the prompt will still contain the prefix, suffix, and edit records.
+
+## Putting It All Together
+
+As learned above, every NES request contains the `<|editable_region|>`, `<|edit_history|>` and `<|additional_context|>` tokens.
+![NES Cover Image](./images/putting-it-together.png)
+
+At the end, each piece is carefully constructed into the model exactly the way it was trained. This symmetry between training and runtime makes NES far more reliable than native autocomplete-style approaches.
+
+## What’s next?
+
+In our next post, we’ll talk about Request Management, the system that ensures the model never gets a chance to be wrong about the user’s current context.<br />
+
+We all understand real coding experience involves a lot of short, focused typing, moving the cursor to different places, and continuing to edit while a request is still in flight. This means the model requests can become outdated before their response arrives, or worse,  it might produce suggestions for code that no longer exists. <br />
+
+One of the reasons NES feels fast is because everything that isn’t the latest user intent is thrown away immediately. This cancellation of stale predictions is one of the biggest reasons Pochi’s NES feels so smooth and accurate. <br />
+
+More on this in our upcoming Part 3 post.  Stay tuned!
+
+
 # NES Series (Part 1): The Edit Model Behind Tab Completion
 URL: /developer-updates/how-we-created-nes-model
 Inside the engineering behind how we trained our next edit model
@@ -2504,9 +2838,528 @@ Here you will find highlights on features, enhancements, and bug fixes, plus ins
 
   --- */}
 
+## [NES Series (Part 3): The Request Management Lifecycle Under Continuous Typing](./request-management-in-nes)
+
+#### Dec 22, 2025
+
+# NES Series (Part 3): The Request Management Lifecycle Under Continuous Typing
+
+In [Part 1](https://docs.getpochi.com/developer-updates/how-we-created-nes-model/), we talked about how we trained our NES model to predict the next meaningful edit you’re likely to make in your code.
+
+In [Part 2](https://docs.getpochi.com/developer-updates/#nes-series-part-2-real-time-context-management-in-your-code-editor), we then covered what the model takes as context to make this edit. This included deep dives into editable regions, user’s edit history, and using the overall project context.
+
+Together, these two pieces (model + context) form the core intelligence foundation of the NES system. But incorporating them into an end-to-end real-time engineering system requires more thinking about real developer coding behaviour.
+
+![NES Cover Image](./images/cover-nes-part-3.png)
+
+A code editor is a continuously changing space. Developers type, pause, delete, move the cursor, undo, redo, and essentially keep editing, often faster than any model can respond. Even a fast model call involves network latency, debouncing delays, server-side scheduling, and decoding / streaming time.
+
+If not careful, a request that was correct when it was sent can return a response that arrives a few hundred milliseconds too late. Which means now you end up with edit suggestions for code that no longer exists. This is something that’s termed “haunted” for being technically right but not at the right place.
+
+![NES Cover Image](./images/editor-stale-response-nes-part-3.png)
+
+This means, in practice, a correct edit shown at the wrong moment is perceived as wrong by the user. So even with proper context and a good model, it is equally important to have the correct timing. Then only can the product actually feel useful without being distracting.
+
+But getting timing right is challenging, due to the ever evolving nature of the user’s editing state. To make NES feel real-time and helpful, we had to reason about what happens before a request is sent, while it’s in-flight, and after the model responds. This is what we call request management.
+
+Let’s look at it in more detail.
+
+## The NES Request Management Lifecycle
+
+![NES Cover Image](./images/lifecycle-prediction-nes-part-3.png)
+
+Request Management of a NES prediction happens in three stages:
+
+* **Before the request:** waiting until the user actually pauses
+* **While the request is in-flight:** discard anything that becomes outdated
+* **After the model responds:** keep the suggestion alive if the user continues along the same trajectory
+
+These map to what we technically implement as **debouncing**, **cancellation**, and **speculative-prediction caching**.
+
+This structure helps bring the intelligent results (what we get with context + model) to users reliably, even as they type continuously. NES continues to run this loop as you type.
+Let’s take a closer look at how we handle timing at each stage.
+
+### Debouncing: Requesting the Model at the Right Moment
+
+The first question we had to tackle was, “When is the right time to send a request?” When a developer is typing continuously, a request on every keystroke has little value and is wasteful. At the same time, waiting too long would make the system feel unresponsive and slow. We had to find that sweet spot that lies in detecting the exact moment the user actually paused typing.
+
+Most systems solve this with a fixed interval, (say, 100ms), but real-world typing isn’t this predictable. Instead, we decided to adapt the debounce interval based on how the user is behaving right at that moment.
+
+To achieve this, we made NES pay attention to a handful of lightweight signals.
+
+For example, typing a `.` often means the developer is about to pause to access a method of an object,  so we get the signal to shorten the debounce delay. Whereas, if the user is continuously typing through a variable name, we stretch the delay a bit to avoid jumping in too early. And if the model’s recent response times have been slower due to network conditions, we account for that too, so suggestions land at the exact moment the user expects them.
+
+![NES Cover Image](./images/debouncing-nes-part-3.png)
+This way, the result is a debounce time window that changes with the user’s rhythm. It is short when the user has paused, and long when they’re in flow, all while making sure it never exceeds 1 second.
+
+### Cancellation: Correctness Over Completion
+
+Once a request is finally sent, the editor doesn’t stop moving. A user can continue typing, move the cursor, or undo and redo steps before the model has even started responding. When that happens, the original request becomes stale instantly.
+
+In such a case, we cancel the original request from the client-side, and in turn, the server propagates the cancellation, with any late responses being discarded without ever getting them rendered to the UI.
+![NES Cover Image](./images/cancellation-nes-part-3.png)
+This is a deliberate design decision that optimises and enforces correctness in a live, ever-evolving editing system. We would prefer that NES show nothing rather than something misleading.
+
+If you’re interested in how this works end-to-end, including streaming behaviour, we’ve written more about it [here](https://www.tabbyml.com/blog/stream-laziness-in-tabby).
+
+### Speculative Prediction: Staying One Step Ahead of the User
+
+Traditional caching is straightforward. If nothing has changed, just reuse the previous response. In the case of NES, this helps to avoid duplicate requests. And to think about it, throwing work away all the time would be expensive if we didn’t balance it out elsewhere.
+
+But we go a step further. When the model returns an edit suggestion, we don’t just cache it for the exact context that produced it, but also speculate on the next few contexts the user is likely to enter.
+
+Now, if the user continues typing along the same trajectory, NES doesn't need to call the model again and can continue serving the speculated suggestion. We call this speculative prediction.
+
+A speculated prediction remains valid as long as the user is essentially still typing into the suggestion and the surrounding context hasn't changed.
+
+It’ll be better to illustrate this with the help of an example. Suppose a user types:
+
+![NES Cover Image](./images/caching-a-nes-blog-3.png)
+
+NES sends a request and gets the following suggestion:
+
+![NES Cover Image](./images/caching-b-nes-blog-3.png)
+
+If the user then continues to type, resulting in:
+
+![NES Cover Image](./images/caching-c-nes-blog-3.png)
+
+This user edit is part of the received suggestion. Therefore, the suggestion should still be displayed (unless the user has explicitly rejected it by pressing `esc`).
+
+By retrieving this result from the forward prediction cache, we can display the suggestion faster and reduce LLM request usage.
+
+![NES Cover Image](./images/caching-d-nes-blog-3.png)
+
+Of course, if the user is not satisfied with the cached suggestion, they still have the option to send a new request to get multiple choices. In essence, forward caching helps accelerate the common path, improving the overall experience.
+
+## Conclusion
+
+By the time a suggestion appears in NES, a lot has already happened. Debouncing decides when is the right time to make a request, cancellation makes sure outdated intent never surfaces in the UI, and speculative prediction lets us reuse good existing predictions when the user naturally moves through them.
+
+While you’d find these techniques are familiar in distributed systems, applying them inside a code editor was a challenge of its own. The primary driving factor wasn’t about throughput or load but about every evolving human intent under motion.
+
+### What’s next?
+
+So far, we’ve focused on how NES decides what to suggest and when those suggestions should appear. With request management in place, we now have a system that ensures LLM-powered edits reach the user only when they’re truly helpful.
+
+But now that brings us to the next stage of the process: How should these edits be presented?
+
+NES suggestions aren’t always a single line near the cursor. Sometimes the relevant edit is several lines or even several files away. Presenting enough information for a quick action without breaking the developer’s flow is a surprisingly deep design and engineering challenge.
+
+This is especially tricky inside a code editor like VS Code, where rendering options are limited. In such cases, how do we preview multi-line edits precisely? How do we make them feel lightweight, immediate, and skimmable, without being modal or disruptive?
+
+In Part 4, we’ll dive into how we approached these constraints and built a rendering system that enables richer previews and lower-latency interactions for code edits.
+
+***
+
+## [Weekly Update #15](./2025-12-19-weekly-update-15)
+
+#### Dec 19, 2025
+
+# Weekly Update #15
+
+### TL;DR
+
+This week includes several improvements and bug fixes across the VSCode extension and Web UI.
+
+A mix of workflow enhancements, UI polish, and reliability fixes landed. Here are the highlights:
+
+### ✨ Enhancements
+
+* **Improved Worktree Selector in VSCode Web UI:** We’ve added support for creating a new worktree with an auto generated name directly from the dropdown; an additional way other than `Cmd` + `Enter` a prompt. We also included tooltips and  renamed `main` worktree to `workspace` in the worktree list UI to better reflect its purpose. **[#896](https://github.com/TabbyML/pochi/issues/896)**, **[#875](https://github.com/TabbyML/pochi/issues/875)**
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/improved-worktree-ui-020.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+* **Open diff directly from a task:** Clicking a task with diffs now opens both the task and its diff panel, making it easier to review changes directly from the task list. **[#849](https://github.com/TabbyML/pochi/issues/849)**
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/open-diff-020.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+* **Quick task creation from the Worktree sidebar:** Added a `+` button next to each worktree to create a new task. **[#877](https://github.com/TabbyML/pochi/issues/877)**
+  <div class="w-12/15 md:ml-8 *:shadow-xl/30 *:rounded-lg">![Add new task via worktree](./images/new-task-worktree-020.png)</div>
+
+* **New keyboard shortcut:** Added a `Ctrl`+ \` keybinding in VSCode to instantly toggle the Pochi layout or open the terminal, improving keyboard-first navigation. This shortcut only exists as an advance configuration at the moment. To enable it, set `enablePochiLayoutKeybinding` in VSCode settings `pochi.advanced` section to `true`. **[#881](https://github.com/TabbyML/pochi/issues/881)**
+
+  ### 🐛 Bug Fixes
+
+* **Improved PR fetching reliability:** Fixed the GitHub PR fetching logic to exclude pull requests from forked repositories, ensuring only relevant PRs from the main repo appear in the Worktree/PR selector. **[#893](https://github.com/TabbyML/pochi/issues/893)**
+
+***
+
+## [Closing the Loop: How Reinforcement Learning is Changing AI Coding](./reinforcement-learning-in-ai-coding)
+
+#### Dec 12, 2025
+
+# Closing the Loop: How Reinforcement Learning is Changing AI Coding
+
+### TL;DR
+
+Using SFT teaches models how to write code, but it is RL that is necessary to teach them what works. On the other hand, introducing RL in software engineering brings its own specific challenges:  data availability, signal sparsity, and state tracking. In this post, we’ll break down how recent works address these challenges.
+
+![Reinforcement Learning is Changing AI Coding Cover Image](./images/rl-blog-cover-image.png)
+
+So far, the focus of RL driven improvements had been based on competitive coding. For example, in LeetCode-style tasks, the model works in a closed loop. It generally receives a clear problem statement and in turn, it generates a single, self-contained solution.
+
+This means there are no dependencies involved, no files systems to navigate, and no legacy code that can break. It is exactly like solving a logic puzzle in isolation rather than understanding the engineering implications on the overall codebase.
+
+However, the field of Software Engineering (SWE) in real-world is fundamentally different. It is a stateful, multi-turn interactive problem. A day-to-day involves much more than just writing the correct functions. You often need to navigate a file system, check up on dependency graphs, run the proper tests, and interpret logs in case of errors. This implies, an agent effectively needs to maintain coherence across a long horizon of interactions.
+
+Which is why RL is an ideal candidate for SWE since agent actions produce verifiable results. At the same time, it also introduces challenges that are not present in single-turn tasks. For example,
+
+* **Data Availability:** We cannot easily simulate millions of environmental interactions like we can with math problems.
+* **Signal Sparsity:** Often, success signals appear at the very end of a long sequence of edits.
+* **State Tracking:** Along with the static text of the code, the model must understand the dynamic state of the runtime environment
+
+Recent works from Meta and Moonshot AI surfaced how the industry is pivoting from general reasoning RL to domain-specific SWE-RL to address these challenges.
+
+## The Data Problem
+
+In order to learn trial and error, the standard RL requires an agent to interact with an environment. For coding, this means running a test suite or compiling code. As compared to verifying math proof, this simulation will be prohibitively slow and expensive in a real-world setting. Here, the engineering challenges arises to figure out how to bootstrap the entire learning process without being dependent on costly online simulation.
+
+Meta proved that you can bypass the online bottleneck by using the massive offline history of Github. In its recent work on **SWE-RL** they talked through this approach instead of setting up a live sandbox for every training step.
+
+But offline data lacks a reward signal. For every historical Pull Request, you cannot easily go back in time and execute tests. SWE-RL solves this by creating a process proxy reward. They calculate the fine grained text similarity  between the generated patch and the actual developer ground truth solution instead of just checking if the code runs.
+
+![Process proxy reward](./images/swe-process-proxy-reward.png)
+
+Depending on how closely the generated format matches the human solution, the model receives a continuous reward. On the other hand, if the model generates an invalid patch format, it receives a penalty. This demonstrates that even before touching a compiler, you can teach a model complex engineering behaviours like navigating file structures and adhering to project conventions using static history.
+
+## The Signal Sparsity Problem
+
+Next, we have the credit assignment problem while facing online training within executable environments. That means it is difficult to indentify which step really contributed to the final success of the model and which step should get the reward. This reflects on software engineering as any agent can fail after 50 steps of editing and testing. Standard RL struggles to identify which specific step caused the failure.
+
+The **Kimi-Dev** paper addresses this through task decomposition. It treats software engineering as a composition of atomic skills: the BugFixer (editing logic) and the TestWriter (verifying logic) instead of training an end-to-end agent to solve the issue immediately.
+
+Their solution starts with Agentless RL. They train the model specifically on these short horizon atomic tasks using outcome based rewards. They look for signals on whether the patch passed the test or did the test reproduce the bug. And since the tasks are scoped down, the feedback signal becomes dense and clear.
+
+Kimi-Dev shows that with minimal additional data, a model having these pre-trained capabilities can be adapted to a complex multi-turn agent framework. This suggests that the most efficient path to autonomous agents is rigorous skill acquisition’s followed by workflow adaptation rather than brute force end to end training.
+
+## The State Problem: Building a Code World Model
+
+Coming to the final challenge, which is also arguably the most profound. Engineers generally do not just read code as text but also think about the execution loops in their mind. This involves tracking how variables change in memory and how functions interact between files. Meanwhile, since current code LLMs lack this internal compiler engine, they just merely predict the next token based on statistical likelihood.
+
+Meta **Code World Model** addresses this by fundamentally changing the training curriculum. They realized that waiting until the RL phase to teach execution dynamics is too late. The rewards are too sparse and the gradient vanishes on hard problems.
+
+Instead, in the mid-training stage, they inject process supervision directly. To teach the physics of code, they constructed two massive datasets:
+
+* **Python Execution Traces:** With over 120 million examples, the model is trained to predict not just the next line of code, but also the exact state of runtime variables (the values in memory) after every single line.
+
+* **ForagerAgent Trajectories:** Agents with 3 million trajectories that interact with a Docker environment to solve tasks.
+
+This forces the model to internalise a Code World Model. By the time the model enters the final RL stage it is no longer starting from scratch. It already understands if I write X then variable Y changes to Z.
+
+Consequently, the RL stage becomes a process of Goal Alignment. It uses sparse result rewards like passing tests simply to guide a model.  It already understands execution physics to select the specific path that satisfies the verification requirement.
+
+![Goal Alignment](./images/goal-alignment.png)
+
+## Takeaway: Moving Toward Verifiable Agents
+
+This progression from **SWE-RL (offline proxy rewards)** to **Kimi-Dev (decomposed skill learning)** and **CWM (execution-trace world models)** outlines a clear engineering roadmap for the next generation of code models and agentic RL frameworks.
+
+We are seeing a shift from generic reasoning to specialized engineering. Future models will be more than just smart. They will be grounded in repository history, capable of self-verification through test writing, and possess an explicit internal model of runtime state.
+
+At TabbyML we view these developments as the foundation for **Verifiable Engineering**. The future value of AI in software development lies in building agents that understand and respect the state of your system.
+
+Related Papers:
+
+1. [SWE-RL: Advancing LLM Reasoning via Reinforcement Learning on Open Software Evolution](https://arxiv.org/abs/2502.18449)
+2. [Kimi-Dev: Agentless Training as Skill Prior for SWE-Agents](https://arxiv.org/abs/2509.23045)
+3. [CWM: An Open-Weights LLM for Research on Code Generation with World Models](https://arxiv.org/abs/2510.02387)
+
+***
+
+## [Weekly Update #14](./2025-12-11-weekly-update-14)
+
+#### Dec 11, 2025
+
+# Weekly Update #14
+
+### TL;DR
+
+This release introduces pair of upgrades aimed at making Pochi feel even more native to your development flow: GitHub Issue integration embedded right into task input, and a new `Cmd`/`Ctrl` + `Enter` shortcut to spin up worktrees easily.
+
+### 🚀 Features
+
+* **GitHub Issue Integration in Task Input:** You can now connect tasks directly to GitHub Issues. Typing `@#` opens an inline issue selector where you can search by issue ID, keyword, or scroll the dropdown list.<br />
+
+  All newly created issues are accessible within a minute. Once selected, issues appear as markdown badges and are sent as enriched context to the model.
+
+  **Note:** This feature requires GitHub CLI to be installed and authenticated. **[#833](https://github.com/TabbyML/pochi/issues/823)**
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/connect-to-github-issue.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+* **Create a New Worktree + Task with `Cmd`/`Ctrl` + `Enter`:** You can now start a brand-new worktree and task instantly using `Cmd`+`Enter` (macOS) or `Ctrl`+`Enter` (Windows/Linux). When you submit a prompt with this shortcut, Pochi automatically creates a new worktree with an auto-generated branch name (based on the task description, falling back to a timestamp when needed) and launches a new task inside it. <br />
+
+  The shortcut also works when submitting messages with file or image attachments. In existing tasks, `Cmd`/`Ctrl`+`Enter` continues to queue messages as before. **[#822](https://github.com/TabbyML/pochi/issues/822)** <br />
+
+  <video
+    controls
+    style={{
+    width: "100%",
+    borderRadius: "8px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+  }}
+  >
+    <source src="https://assets.docs.getpochi.com/create-worktree-with-command-click.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+***
+
+## [NES Series (Part 2): Real-Time Context Management in Your Code Editor](./context-management-in-your-editor)
+
+#### Dec 05, 2025
+
+# NES Series (Part 2): Real-Time Context Management in Your Code Editor
+
+In [Part 1](https://docs.getpochi.com/developer-updates/how-we-created-nes-model/), we covered how we trained our **NES model**, including topics such as the special tokens we use, the LoRA-based fine-tuning on Gemini Flash Lite, and how we utilized a judge LLM to evaluate the model.
+
+However, the end experience is far more than just building a good model. To make NES feel “intent-aware” inside your editor, we needed to give the model the right context at the right moment.
+
+![NES Cover Image](./images/cover-nes-part-2.png)
+
+In part 2, we’ll talk about that **runtime system**, or to be precise, how Pochi manages, ranks, and streams real-time edit context.  This is the core that helps NES to understand your intent and predict the next meaningful change.
+
+## Why Context Management Matters
+
+To start, let’s understand what context management is. In our case, it’s the layer between when a user starts typing and when the model is called with a well-formed prompt. During that in-between phase, the system gathers and prepares all the relevant context the LLM needs before we make a model request. <br />
+
+As to why it matters, imagine simply sending the entire file to the model on every keystroke. Not only will the model become slower and noisier, but you’d get unstable predictions and over 20 model calls per second, rendering the whole experience unusable.
+
+Instead, as previewed in the first article, we provide NES with three kinds of context:
+
+* **File Context:** text, filepath, cursor position, and the region to be edited
+* **Edit History:** record of recent edit steps
+* **Additional context from other files (optional):** e.g., functions/type declarations that help understand the current file <br />
+
+Each of these depends on clever filtering, segmentation, and timing - all of which happen in milliseconds during normal typing, as we’ll learn below.
+
+## 1. File Context: Finding the “live” region of code
+
+The first question to solve: “Where is the user editing right now?”. This is the foundation of every NES prompt. We answer this by gathering three quick pieces of information from the VS Code API:
+
+* The current file text
+* The file path
+* The user’s cursor position
+  Using this information, we compute what is called “the editable region”. This region is generally a small code window around the user’s cursor of \~10 lines.
+
+### Why \~10 lines?
+
+Because realistically, the next edit will almost always happen very close to where the user is already editing. This small window keeps the latency extremely low and is large enough to capture the structure around the edit. <br />
+
+And while we observe many models are over-eager and hallucinate changes elsewhere, our model is prevented from rewriting parts of the file the user wasn’t touching.
+
+An example of the editable region would be:
+![NES Cover Image](./images/file-context-editable-region.png)
+
+## 2. Edit history: Following the user’s intent over time
+
+So far, we have learnt where the user is currently editing, but we also need to understand how the code is changing over time. This is the part where edit history becomes important for the edit model to predict the user’s intent.  <br />
+
+Now, while we could use the VS Code API to register a listener for text change events, this ends up triggering an event for almost every keystroke. For example, if a user updates a type from string to email, it ends up producing \~6 events.
+![NES Cover Image](./images/text-change-events.png)
+
+These are not your meaningful edit steps. If we send this to the model, it will think each keystroke is a new “user intent” and will fire too many requests with wildly different predictions.  Instead, we reconstruct real edit steps using an internal change segmentation grouping.
+
+### How we group events into meaningful steps
+
+Since we cannot directly use the listener events, we decided to reduce them to events that represent edit steps. To achieve this, we group raw text-change events into undo-redo scale units. <br />
+
+Most editors record undo-redo steps on a word scale - for example, when a user inputs a sentence, an undo action will revert the last input word.
+In our case, for building edit prediction prompts, we do this on a larger scale.
+
+* Once we receive information on a user’s cursor position and tracking gets initiated, we create an edit steps list, where each step is an accumulation of several text change events. We found that 5 steps is the sweet spot to build a prompt. Anything more than that adds noise, and if less, loses the intent.
+* For each received text change event, we check if it is adjacent to the previous one. If yes, it belongs to the same edit step; otherwise, if it happens in a different part of the file, we consider it as a new edit step.
+  So continuing our example from earlier, if the user happens to add a `validateEmail` function next, we now have two edit steps in tracking.
+
+The first edit step:
+![NES Cover Image](./images/first-edit-step.png)
+
+The second edit step:
+![NES Cover Image](./images/second-edit-step.png)
+
+NES receives these steps wrapped inside `<|edit_history|>` token to learn how the code is evolving.
+
+### Special Case: Git Checkout Noise
+
+One edge case we uncovered is when users run `git checkout` to switch branches. This triggers massive file changes, none of which represent real user intent. If we were to treat these as edit steps, the model would end up thinking the user rewrote half the codebase. In order to avoid polluting the model direction, we:
+
+* Monitor the git status
+* Reset edit history when it changes (`checkout`, `pull`, `stash`)
+* Resume tracking after a few seconds
+
+## 3. Additional Context: Bringing in the rest of your project
+
+Code rarely exists in isolation. If you’re editing a function call, the model may need the definition. Likewise, if you’re modifying a type, the model may need the type declaration.<br />
+
+To give NES this kind of project-aware understanding, we pull additional snippets using the user’s installed language server. For this, we have two VS Code / LSP APIs:
+
+* We use `vscode.provideDocumentRangeSemanticTokens` to scan the editable region for each token type. Then we can find the tokens of interest, like a function, interface, or type defined in another file.
+* Next, we use the VS Code command `vscode.executeDefinitionProvider` to get the target location for the definition code snippets. This is like `Ctrl` / `Cmd` + clicking on a function to see the definition in another file.
+
+These two commands are provided by the language server (LSP), which should be available when the language plugin is installed in VS Code. We then extract the definition snippet and include it in `<|additional_context|>` token as shown below:
+![NES Cover Image](./images/additional-context.png)
+
+This gives the model the same context a developer would mentally reference before typing the next edit.
+
+**Note:** We do realise that some of the functions could be huge or a type might be hundreds of lines, with LSP sometimes returning entire class bodies. Therefore, to throttle/limit semantic snippet extraction, we’ve currently hard-coded a maximum of 2000 characters per snippet for now. <br />
+
+Meanwhile, in cases where good LSP support is lacking, like plain text, we don’t add any related snippets context to the prompt. Instead, the prompt will still contain the prefix, suffix, and edit records.
+
+## Putting It All Together
+
+As learned above, every NES request contains the `<|editable_region|>`, `<|edit_history|>` and `<|additional_context|>` tokens.
+![NES Cover Image](./images/putting-it-together.png)
+
+At the end, each piece is carefully constructed into the model exactly the way it was trained. This symmetry between training and runtime makes NES far more reliable than native autocomplete-style approaches.
+
+## What’s next?
+
+In our next post, we’ll talk about Request Management, the system that ensures the model never gets a chance to be wrong about the user’s current context.<br />
+
+We all understand real coding experience involves a lot of short, focused typing, moving the cursor to different places, and continuing to edit while a request is still in flight. This means the model requests can become outdated before their response arrives, or worse,  it might produce suggestions for code that no longer exists. <br />
+
+One of the reasons NES feels fast is because everything that isn’t the latest user intent is thrown away immediately. This cancellation of stale predictions is one of the biggest reasons Pochi’s NES feels so smooth and accurate. <br />
+
+More on this in our upcoming Part 3 post.  Stay tuned!
+
+***
+
+## [Weekly Update #13](./2025-12-04-weekly-update-13)
+
+#### Dec 04, 2025
+
+# Weekly Update #13
+
+### TL;DR
+
+This release brings some of our most practical updates yet: GitHub PR creation directly from worktrees, the ability to fork tasks when an agent drifts, clean task resets when context gets too large, and UI improvements that make multi-worktree setups far easier to manage.
+
+A small step closer to a more transparent, predictable coding agent.
+
+### 🚀 Features
+
+* **GitHub PR Workflow:** Pochi now understands Pull Requests per worktree. You can create PRs directly from the sidebar, and each worktree shows its associated PR, status (checks running, ready to merge, failed), and a breakdown of CI/Lint/Test results with quick links. PR state persists across sessions and stays linked to your worktree. **[#747](https://github.com/TabbyML/pochi/issues/747)**
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/github-pr.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+* **Fork a task:** You can now fork any task when things go off-track. If an agent drifts, a tool call fails, or you want to try a different direction, hit Fork to spin up a new task starting from the same point in the conversation. The original stays untouched. <br />
+
+  <video
+    controls
+    style={{
+    width: "100%",
+    borderRadius: "8px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+  }}
+  >
+    <source src="https://assets.docs.getpochi.com/forking.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+  This makes it much easier to debug issues, try alternative fixes, or compare multiple approaches side-by-side. One great use case would be to provide corrective feedback and guide the agent back on track without resetting the whole task. **[#455](https://github.com/TabbyML/pochi/issues/455)**
+
+* **Create a New Task with Previous Context:** When a task grows beyond \~50k tokens, Pochi now suggests New Task with Summary option. This creates a clean task with a summary of the previous conversation, helping you avoid hitting context limits while keeping all relevant information. **[#779](https://github.com/TabbyML/pochi/issues/779)**
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/task-summary.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+* **Auto Layout:** We added a new “Pochi Layout” toggle that instantly arranges your VS Code workspace into an optimized 3-pane layout: the Pochi task view on the left, code/diffs on the upper right, and terminals in a separate bottom-right tab group. This keeps terminal output isolated, prevents accidental layout shifts, and makes long-running tasks much easier to follow. **[#733](https://github.com/TabbyML/pochi/issues/733)**
+
+  <video
+    controls
+    style={{
+          width: "100%",
+          borderRadius: "8px",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+          }}
+  >
+    <source src="https://assets.docs.getpochi.com/pochi-auto-layout.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+### ✨ Enhancements
+
+* **Incremental Task IDs:** Tasks now receive a simple incremental ID (`#001`, `#002`, …) that is shared across all worktrees within the same Git repository. This makes tasks easier to reference while still preserving grouping by worktree in the UI. **[#746](https://github.com/TabbyML/pochi/issues/746)**
+  <div class="w-3/6 md:ml-8 *:shadow-xl/30 *:rounded-lg">![Auto increment](./images/auto-increment.png)</div>
+
+* **Optimistic Worktree Deletion:** Deleting a worktree now updates instantly in the UI, making the worktree disappears immediately without waiting for the backend to confirm. This makes task management feel faster and keeps the sidebar in sync with your intent.
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/delete-worktree.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+### 🔥 Preview
+
+* We’re working on multi-worktree task execution (run tasks in parallel across branches or models) and GitHub/Linear issue linking that lets Pochi automatically attach, track, and close issues as part of your workflow.
+
+***
+
 ## [Weekly Update #12](./2025-11-28-weekly-update-12)
 
-#### Nov 21, 2025
+#### Nov 28, 2025
 
 # Weekly Update #12
 
@@ -3465,6 +4318,212 @@ This week we polished the VS Code extension with some **UX upgrades**, open-sour
 ### Bug Fixes 🐛
 
 * **File search now correctly surfaces matching files:** Queries that used to return empty results will now behave as expected. [#79](https://github.com/TabbyML/pochi/pull/79)
+
+
+# Closing the Loop: How Reinforcement Learning is Changing AI Coding
+URL: /developer-updates/reinforcement-learning-in-ai-coding
+Developers are trying to make LLMs write code, but few are teaching them how to engineer
+***
+
+title: 'Closing the Loop: How Reinforcement Learning is Changing AI Coding'
+description: "Developers are trying to make LLMs write code, but few are teaching them how to engineer"
+image: "/og-image/rl-blog-og-image.png"
+---------------------------------------
+
+# Closing the Loop: How Reinforcement Learning is Changing AI Coding
+
+### TL;DR
+
+Using SFT teaches models how to write code, but it is RL that is necessary to teach them what works. On the other hand, introducing RL in software engineering brings its own specific challenges:  data availability, signal sparsity, and state tracking. In this post, we’ll break down how recent works address these challenges.
+
+![Reinforcement Learning is Changing AI Coding Cover Image](./images/rl-blog-cover-image.png)
+
+So far, the focus of RL driven improvements had been based on competitive coding. For example, in LeetCode-style tasks, the model works in a closed loop. It generally receives a clear problem statement and in turn, it generates a single, self-contained solution.
+
+This means there are no dependencies involved, no files systems to navigate, and no legacy code that can break. It is exactly like solving a logic puzzle in isolation rather than understanding the engineering implications on the overall codebase.
+
+However, the field of Software Engineering (SWE) in real-world is fundamentally different. It is a stateful, multi-turn interactive problem. A day-to-day involves much more than just writing the correct functions. You often need to navigate a file system, check up on dependency graphs, run the proper tests, and interpret logs in case of errors. This implies, an agent effectively needs to maintain coherence across a long horizon of interactions.
+
+Which is why RL is an ideal candidate for SWE since agent actions produce verifiable results. At the same time, it also introduces challenges that are not present in single-turn tasks. For example,
+
+* **Data Availability:** We cannot easily simulate millions of environmental interactions like we can with math problems.
+* **Signal Sparsity:** Often, success signals appear at the very end of a long sequence of edits.
+* **State Tracking:** Along with the static text of the code, the model must understand the dynamic state of the runtime environment
+
+Recent works from Meta and Moonshot AI surfaced how the industry is pivoting from general reasoning RL to domain-specific SWE-RL to address these challenges.
+
+## The Data Problem
+
+In order to learn trial and error, the standard RL requires an agent to interact with an environment. For coding, this means running a test suite or compiling code. As compared to verifying math proof, this simulation will be prohibitively slow and expensive in a real-world setting. Here, the engineering challenges arises to figure out how to bootstrap the entire learning process without being dependent on costly online simulation.
+
+Meta proved that you can bypass the online bottleneck by using the massive offline history of Github. In its recent work on **SWE-RL** they talked through this approach instead of setting up a live sandbox for every training step.
+
+But offline data lacks a reward signal. For every historical Pull Request, you cannot easily go back in time and execute tests. SWE-RL solves this by creating a process proxy reward. They calculate the fine grained text similarity  between the generated patch and the actual developer ground truth solution instead of just checking if the code runs.
+
+![Process proxy reward](./images/swe-process-proxy-reward.png)
+
+Depending on how closely the generated format matches the human solution, the model receives a continuous reward. On the other hand, if the model generates an invalid patch format, it receives a penalty. This demonstrates that even before touching a compiler, you can teach a model complex engineering behaviours like navigating file structures and adhering to project conventions using static history.
+
+## The Signal Sparsity Problem
+
+Next, we have the credit assignment problem while facing online training within executable environments. That means it is difficult to indentify which step really contributed to the final success of the model and which step should get the reward. This reflects on software engineering as any agent can fail after 50 steps of editing and testing. Standard RL struggles to identify which specific step caused the failure.
+
+The **Kimi-Dev** paper addresses this through task decomposition. It treats software engineering as a composition of atomic skills: the BugFixer (editing logic) and the TestWriter (verifying logic) instead of training an end-to-end agent to solve the issue immediately.
+
+Their solution starts with Agentless RL. They train the model specifically on these short horizon atomic tasks using outcome based rewards. They look for signals on whether the patch passed the test or did the test reproduce the bug. And since the tasks are scoped down, the feedback signal becomes dense and clear.
+
+Kimi-Dev shows that with minimal additional data, a model having these pre-trained capabilities can be adapted to a complex multi-turn agent framework. This suggests that the most efficient path to autonomous agents is rigorous skill acquisition’s followed by workflow adaptation rather than brute force end to end training.
+
+## The State Problem: Building a Code World Model
+
+Coming to the final challenge, which is also arguably the most profound. Engineers generally do not just read code as text but also think about the execution loops in their mind. This involves tracking how variables change in memory and how functions interact between files. Meanwhile, since current code LLMs lack this internal compiler engine, they just merely predict the next token based on statistical likelihood.
+
+Meta **Code World Model** addresses this by fundamentally changing the training curriculum. They realized that waiting until the RL phase to teach execution dynamics is too late. The rewards are too sparse and the gradient vanishes on hard problems.
+
+Instead, in the mid-training stage, they inject process supervision directly. To teach the physics of code, they constructed two massive datasets:
+
+* **Python Execution Traces:** With over 120 million examples, the model is trained to predict not just the next line of code, but also the exact state of runtime variables (the values in memory) after every single line.
+
+* **ForagerAgent Trajectories:** Agents with 3 million trajectories that interact with a Docker environment to solve tasks.
+
+This forces the model to internalise a Code World Model. By the time the model enters the final RL stage it is no longer starting from scratch. It already understands if I write X then variable Y changes to Z.
+
+Consequently, the RL stage becomes a process of Goal Alignment. It uses sparse result rewards like passing tests simply to guide a model.  It already understands execution physics to select the specific path that satisfies the verification requirement.
+
+![Goal Alignment](./images/goal-alignment.png)
+
+## Takeaway: Moving Toward Verifiable Agents
+
+This progression from **SWE-RL (offline proxy rewards)** to **Kimi-Dev (decomposed skill learning)** and **CWM (execution-trace world models)** outlines a clear engineering roadmap for the next generation of code models and agentic RL frameworks.
+
+We are seeing a shift from generic reasoning to specialized engineering. Future models will be more than just smart. They will be grounded in repository history, capable of self-verification through test writing, and possess an explicit internal model of runtime state.
+
+At TabbyML we view these developments as the foundation for **Verifiable Engineering**. The future value of AI in software development lies in building agents that understand and respect the state of your system.
+
+Related Papers:
+
+1. [SWE-RL: Advancing LLM Reasoning via Reinforcement Learning on Open Software Evolution](https://arxiv.org/abs/2502.18449)
+2. [Kimi-Dev: Agentless Training as Skill Prior for SWE-Agents](https://arxiv.org/abs/2509.23045)
+3. [CWM: An Open-Weights LLM for Research on Code Generation with World Models](https://arxiv.org/abs/2510.02387)
+
+
+# NES Series (Part 3): The Request Management Lifecycle Under Continuous Typing
+URL: /developer-updates/request-management-in-nes
+In this post, we'll explore how NES decides what to suggest and when those suggestions should appear at the right time
+***
+
+title: 'NES Series (Part 3): The Request Management Lifecycle Under Continuous Typing'
+description: "In this post, we'll explore how NES decides what to suggest and when those suggestions should appear at the right time"
+image: "/og-image/cover-nes-part-3-og-image.png"
+------------------------------------------------
+
+# NES Series (Part 3): The Request Management Lifecycle Under Continuous Typing
+
+In [Part 1](https://docs.getpochi.com/developer-updates/how-we-created-nes-model/), we talked about how we trained our NES model to predict the next meaningful edit you’re likely to make in your code.
+
+In [Part 2](https://docs.getpochi.com/developer-updates/#nes-series-part-2-real-time-context-management-in-your-code-editor), we then covered what the model takes as context to make this edit. This included deep dives into editable regions, user’s edit history, and using the overall project context.
+
+Together, these two pieces (model + context) form the core intelligence foundation of the NES system. But incorporating them into an end-to-end real-time engineering system requires more thinking about real developer coding behaviour.
+
+![NES Cover Image](./images/cover-nes-part-3.png)
+
+A code editor is a continuously changing space. Developers type, pause, delete, move the cursor, undo, redo, and essentially keep editing, often faster than any model can respond. Even a fast model call involves network latency, debouncing delays, server-side scheduling, and decoding / streaming time.
+
+If not careful, a request that was correct when it was sent can return a response that arrives a few hundred milliseconds too late. Which means now you end up with edit suggestions for code that no longer exists. This is something that’s termed “haunted” for being technically right but not at the right place.
+
+![NES Cover Image](./images/editor-stale-response-nes-part-3.png)
+
+This means, in practice, a correct edit shown at the wrong moment is perceived as wrong by the user. So even with proper context and a good model, it is equally important to have the correct timing. Then only can the product actually feel useful without being distracting.
+
+But getting timing right is challenging, due to the ever evolving nature of the user’s editing state. To make NES feel real-time and helpful, we had to reason about what happens before a request is sent, while it’s in-flight, and after the model responds. This is what we call request management.
+
+Let’s look at it in more detail.
+
+## The NES Request Management Lifecycle
+
+![NES Cover Image](./images/lifecycle-prediction-nes-part-3.png)
+
+Request Management of a NES prediction happens in three stages:
+
+* **Before the request:** waiting until the user actually pauses
+* **While the request is in-flight:** discard anything that becomes outdated
+* **After the model responds:** keep the suggestion alive if the user continues along the same trajectory
+
+These map to what we technically implement as **debouncing**, **cancellation**, and **speculative-prediction caching**.
+
+This structure helps bring the intelligent results (what we get with context + model) to users reliably, even as they type continuously. NES continues to run this loop as you type.
+Let’s take a closer look at how we handle timing at each stage.
+
+### Debouncing: Requesting the Model at the Right Moment
+
+The first question we had to tackle was, “When is the right time to send a request?” When a developer is typing continuously, a request on every keystroke has little value and is wasteful. At the same time, waiting too long would make the system feel unresponsive and slow. We had to find that sweet spot that lies in detecting the exact moment the user actually paused typing.
+
+Most systems solve this with a fixed interval, (say, 100ms), but real-world typing isn’t this predictable. Instead, we decided to adapt the debounce interval based on how the user is behaving right at that moment.
+
+To achieve this, we made NES pay attention to a handful of lightweight signals.
+
+For example, typing a `.` often means the developer is about to pause to access a method of an object,  so we get the signal to shorten the debounce delay. Whereas, if the user is continuously typing through a variable name, we stretch the delay a bit to avoid jumping in too early. And if the model’s recent response times have been slower due to network conditions, we account for that too, so suggestions land at the exact moment the user expects them.
+
+![NES Cover Image](./images/debouncing-nes-part-3.png)
+This way, the result is a debounce time window that changes with the user’s rhythm. It is short when the user has paused, and long when they’re in flow, all while making sure it never exceeds 1 second.
+
+### Cancellation: Correctness Over Completion
+
+Once a request is finally sent, the editor doesn’t stop moving. A user can continue typing, move the cursor, or undo and redo steps before the model has even started responding. When that happens, the original request becomes stale instantly.
+
+In such a case, we cancel the original request from the client-side, and in turn, the server propagates the cancellation, with any late responses being discarded without ever getting them rendered to the UI.
+![NES Cover Image](./images/cancellation-nes-part-3.png)
+This is a deliberate design decision that optimises and enforces correctness in a live, ever-evolving editing system. We would prefer that NES show nothing rather than something misleading.
+
+If you’re interested in how this works end-to-end, including streaming behaviour, we’ve written more about it [here](https://www.tabbyml.com/blog/stream-laziness-in-tabby).
+
+### Speculative Prediction: Staying One Step Ahead of the User
+
+Traditional caching is straightforward. If nothing has changed, just reuse the previous response. In the case of NES, this helps to avoid duplicate requests. And to think about it, throwing work away all the time would be expensive if we didn’t balance it out elsewhere.
+
+But we go a step further. When the model returns an edit suggestion, we don’t just cache it for the exact context that produced it, but also speculate on the next few contexts the user is likely to enter.
+
+Now, if the user continues typing along the same trajectory, NES doesn't need to call the model again and can continue serving the speculated suggestion. We call this speculative prediction.
+
+A speculated prediction remains valid as long as the user is essentially still typing into the suggestion and the surrounding context hasn't changed.
+
+It’ll be better to illustrate this with the help of an example. Suppose a user types:
+
+![NES Cover Image](./images/caching-a-nes-blog-3.png)
+
+NES sends a request and gets the following suggestion:
+
+![NES Cover Image](./images/caching-b-nes-blog-3.png)
+
+If the user then continues to type, resulting in:
+
+![NES Cover Image](./images/caching-c-nes-blog-3.png)
+
+This user edit is part of the received suggestion. Therefore, the suggestion should still be displayed (unless the user has explicitly rejected it by pressing `esc`).
+
+By retrieving this result from the forward prediction cache, we can display the suggestion faster and reduce LLM request usage.
+
+![NES Cover Image](./images/caching-d-nes-blog-3.png)
+
+Of course, if the user is not satisfied with the cached suggestion, they still have the option to send a new request to get multiple choices. In essence, forward caching helps accelerate the common path, improving the overall experience.
+
+## Conclusion
+
+By the time a suggestion appears in NES, a lot has already happened. Debouncing decides when is the right time to make a request, cancellation makes sure outdated intent never surfaces in the UI, and speculative prediction lets us reuse good existing predictions when the user naturally moves through them.
+
+While you’d find these techniques are familiar in distributed systems, applying them inside a code editor was a challenge of its own. The primary driving factor wasn’t about throughput or load but about every evolving human intent under motion.
+
+### What’s next?
+
+So far, we’ve focused on how NES decides what to suggest and when those suggestions should appear. With request management in place, we now have a system that ensures LLM-powered edits reach the user only when they’re truly helpful.
+
+But now that brings us to the next stage of the process: How should these edits be presented?
+
+NES suggestions aren’t always a single line near the cursor. Sometimes the relevant edit is several lines or even several files away. Presenting enough information for a quick action without breaking the developer’s flow is a surprisingly deep design and engineering challenge.
+
+This is especially tricky inside a code editor like VS Code, where rendering options are limited. In such cases, how do we preview multi-line edits precisely? How do we make them feel lightweight, immediate, and skimmable, without being modal or disruptive?
+
+In Part 4, we’ll dive into how we approached these constraints and built a rendering system that enables richer previews and lower-latency interactions for code edits.
 
 
 # Connect to Tabby Server for Enhanced Enterprise Experience
