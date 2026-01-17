@@ -340,6 +340,72 @@ You can manage your custom agents through the Pochi interface or by directly man
 * **Edit**: Modify the agent's definition file.
 
 
+# Edits
+URL: /edits
+Send your local changes as additional context to Pochi
+***
+
+title: Edits
+description: Send your local changes as additional context to Pochi
+icon: "PencilLine"
+------------------
+
+# Edits
+
+Edits account for changes you make locally while iterating on the code. If you fix something yourself, tweak a variable, or partially rewrite a block before asking for help, Pochi captures those recent edits and includes them as part of the review context.
+
+Instead of only seeing the final file state, the agent receives the exact diffs you introduced, which helps it reason about what changed, where it changed, and what you were likely trying to adjust.
+
+This gives the agent a clearer signal of your current intent and what should be addressed next.
+
+<video
+  controls
+  style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+>
+  <source src="https://assets.docs.getpochi.com/useredits.mp4" type="video/mp4" />
+
+  Your browser does not support the video tag.
+</video>
+
+## How to Use Edits
+
+### 1. Make your changes
+
+You can open the diff from the last response and make direct changes to the written code.
+
+![Pochi Models](../assets/images/edits-creation-process.png)
+
+All local changes you make gets reflected in the chatbox UI.
+
+![Pochi Models](../assets/images/edits-tracking-prompt-ui.png)
+
+### 2. Send Edits as a Batch
+
+Once you’re done making changes, submit your next prompt as usual.
+
+For example:
+
+```bash
+Please review the edits
+```
+
+or with extra guidance:
+
+```bash
+Use these edits to understand the new functions we need to add
+```
+
+Pochi will include your recent edits together with your message and use them as structured context for the next step.
+
+![Pochi Models](../assets/images/edits-submitted-prompt.png)
+
+This lets the agent build directly on top of what you already adjusted, without you needing to re-explain those changes in chat.
+
+
 # GitHub
 URL: /github
 
@@ -408,7 +474,7 @@ jobs:
           POCHI_API_KEY: ${{ secrets.POCHI_API_KEY }}
           # Optional: custom model (defaults to CLI's default model if not set)
           # See the Models page for model options and configuration
-          # POCHI_MODEL: google/gemini-2.5-pro
+          # POCHI_MODEL: google/gemini-3-pro
 ```
 
 Notes:
@@ -1534,7 +1600,7 @@ When creating PR with markdown description, pay attention to escape backticks, o
 You can use a single line prefixed with `!` to execute a command. The output of the command will be embedded into the prompt sent to the model.
 
 ```markdown
-!\`git diff --cached\`
+!`git diff --cached`
 
 Please review the staged changes and suggest improvements.
 ```
@@ -2826,6 +2892,144 @@ Let’s dive in!
 * We’re working on previewing tracked user edits directly in the input chat before prompting, and a guided auto-layout intro that explains which editor settings Pochi modifies (layout keybindings, panel behavior, auto-save, conflicting extensions), with the ability to opt into only what you want.
 
 
+# Weekly Update
+URL: /developer-updates/2026-01-09-weekly-update-18
+
+***
+
+## title: Weekly Update #18
+
+# Weekly Update #18
+
+### TL;DR
+
+Hope your year’s been off to a good start.
+
+We’re back to shipping, and this release includes updates to how follow-up prompts use your local edits, a clearer Auto Layout setup flow, better recovery when things fail (like model loading and Mermaid diagrams), and a few UI fixes that remove common friction points.
+
+Let’s dive in!
+
+### 🚀 Features
+
+* **User Edits are now included in agent context:** Recent code changes you make are now captured and sent along with your next prompt. These edits are also shown in the chat context and multi-diff view, so you can see exactly what the agent is reacting to.
+
+  This helps the agent continue from your version of the code without you needing to re-explain what you already changed. **[#983](https://github.com/TabbyML/pochi/issues/983)**
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/useredits.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+### ✨ Enhancements
+
+* **Improved Auto Layout onboarding:** Auto Layout can modify several VS Code settings such as layout, keybindings, auto-save, and conflicting completions. The new onboarding screen explains these changes upfront and allows you to selectively apply them, making it easier to enable Auto Layout with confidence. **[#985](https://github.com/TabbyML/pochi/issues/985)**
+
+<div class="w-7/10 md:ml-8 *:shadow-xl/30 *:rounded-lg">![Auto layout modal](./images/auto-layout-modal.png)</div>
+
+* **Create worktrees from remote branches:** When creating a new worktree, you can now choose a remote branch (for example, `origin/feature-branch`) as the base instead of being limited to local branches. This makes it easier to start from branches that exist on the remote but aren’t checked out locally. **[#958](https://github.com/TabbyML/pochi/issues/958)**
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/select-remote-branches-024.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+* **Recover from Mermaid rendering errors in chat:** When a Mermaid diagram fails to render, a `Fix error with Pochi` button is now shown so you can ask the agent to correct the diagram instead of being stuck with a broken block. **[#968](https://github.com/TabbyML/pochi/issues/968)**
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/mermaid-diagram-fix-with-pochi-024.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+* **Retry when models fail to load:** If the model list fails to load due to a network or backend issue, you can now retry directly from the UI instead of reloading the entire VS Code window.**[#984](https://github.com/TabbyML/pochi/issues/984)**
+
+<div class="w-7/10 md:ml-8 *:shadow-xl/30 *:rounded-lg">![Retry loading models](./images/retry-loading-models.gif)</div>
+
+* **More space for worktree details:** We optimized the worktree list layout so action buttons no longer take up space when not visible, giving more room for worktree names and PR information, particularly on smaller screens.**[#925](https://github.com/TabbyML/pochi/issues/925)**
+
+### 🔥 Preview
+
+* We’re working on a Create Plan flow for new tasks in the sidebar, letting you generate a structured plan first before executing the task.
+
+
+# Weekly Update
+URL: /developer-updates/2026-01-16-weekly-update-19
+
+***
+
+## title: Weekly Update #19
+
+# Weekly Update #19
+
+### TL;DR
+
+Another batch of updates is out. Here’s what we’ve shipped since the last release.
+
+### ✨ Enhancements
+
+* **New Pochi landing page:** The Pochi website now has a new landing page with clearer explanations of core features, workflows, and setup, making it easier for new users to evaluate and install Pochi. [#Visit Page](https://www.tabbyml.com/agent)
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/landing-page-pochi.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+* **Embedded bash outputs are now visible in the UI:** When workflows embed command outputs into the model context (for example git diff in the create-pr workflow), those outputs are now displayed in chat instead of being hidden as system messages, making it easier to inspect and debug what the agent is responding to. [#1010](https://github.com/TabbyML/pochi/issues/1010)
+  <video
+    controls
+    style={{
+     width: "100%",
+     borderRadius: "8px",
+     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+     }}
+  >
+    <source src="https://assets.docs.getpochi.com/bash-commands-embedds-024.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+### 📖 Resources
+
+* We published a step-by-step guide showing how to use Git worktrees and parallel agents to run multiple tasks concurrently, with a practical weather app example that walks through setup, coordination, and best practices. [#Read more](https://docs.getpochi.com/tutorials/parallel-agent-guidance/)
+
+### 🔥 Preview
+
+* Along with Create Plan flow for new tasks, we’re also working on letting you choose which MCP servers and tools a task can access directly from the sidebar, instead of using a single global auto-approve toggle.
+
+  Stay tuned!
+
+
 # NES Series (Part 2): Real-Time Context Management in Your Code Editor
 URL: /developer-updates/context-management-in-your-editor
 Learn how Pochi's NES model manages, ranks, and streams real-time edit context
@@ -2947,7 +3151,114 @@ We all understand real coding experience involves a lot of short, focused typing
 
 One of the reasons NES feels fast is because everything that isn’t the latest user intent is thrown away immediately. This cancellation of stale predictions is one of the biggest reasons Pochi’s NES feels so smooth and accurate. <br />
 
-More on this in our upcoming Part 3 post.  Stay tuned!
+More on this in our Part 3 post. **[Read more](https://docs.getpochi.com/developer-updates/request-management-in-nes/)**.
+
+
+# NES Series (Part 4): Dynamic Rendering Strategies for AI Code Edits
+URL: /developer-updates/dynamic-rendering-stratergies-for-ai-edits
+How Pochi renders a NES suggestion in VS Code without disrupting the developer's flow
+***
+
+title: 'NES Series (Part 4): Dynamic Rendering Strategies for AI Code Edits'
+description: "How Pochi renders a NES suggestion in VS Code without disrupting the developer's flow"
+image: "/og-image/cover-nes-part-4-og-image"
+--------------------------------------------
+
+# NES Series (Part 4): Dynamic Rendering Strategies for AI Code Edits
+
+![NES Cover Image Part 4](./images/cover-nes-part-4-blog.png)
+
+So far in this series, you’ve seen **[how we trained our NES model](https://docs.getpochi.com/developer-updates/how-we-created-nes-model/)**, what that **[model takes as context](https://docs.getpochi.com/developer-updates/context-management-in-your-editor/)** to make a prediction, and how these model **[requests are managed with correct timing](https://docs.getpochi.com/developer-updates/request-management-in-nes/)** under continuous typing.
+
+With this, we’ve reached a point where NES can predict what edit should happen and when it should appear in the editor.
+
+In Part 4, we'll talk about how there is still one critical decision to make. **Once a suggestion arrives, how should that change be presented inside a live editor?**
+
+Pochi’s NES is built as a VS Code-native feature, not a standalone IDE or a custom fork. This means previews must integrate with VS Code’s public APIs, performance model, and established interaction patterns.
+
+This introduces a core design challenge - to surface enough context for a suggestion to be actionable, **without disrupting the developer's flow.**
+
+Designing a system that honors this is more than a matter of visual polish; it is a complex systems + UX problem. We’ll explore why this balance is so difficult for a native AI agent and the specific rendering strategies NES uses to achieve it.
+
+## The Display Problem
+
+Unlike conventional editor features, NES does not control where the user’s cursor is when a suggestion arrives. The editor is a continuously changing environment and does not function like a static canvas. Sometimes the user's cursor might be exactly where the edit belongs, or it can be twenty lines away, or the suggestion itself can be a huge change spanning multiple lines.
+
+Showing such suggestions naïvely introduces new failure modes that are easy to trigger and hard to ignore. One experiences jumps in cursor position, abrupt viewport scrolls, or rendering large changes directly in the editing flow. In practice, these behaviors are often more disruptive than not showing a suggestion at all.
+
+This brings us to the most fundamental design question: **How do we show an edit without stealing the developer’s attention?**
+
+Answering that question requires understanding the VS Code interaction model.
+
+VS Code does not provide a built-in API for previewing LLM-generated edits. Instead, the editor offers different primitives for different kinds of locations and edits. These primitives are optimized for various interaction patterns, each with their own affordances and limitations. Some work well for cursor-local edits, while others are better suited for changes elsewhere in the file.
+
+Understanding this difference is key. Pochi's NES does not render suggestions in a single, fixed way. Instead, NES relies on these primitives to create a balance between visibility and disruption.
+
+## Dynamic Rendering Strategy
+
+Rather than forcing all suggestions into a single representation, we designed a Dynamic Rendering Strategy offering the optimal visual experiences in different editing scenarios:
+
+* Suggestions that target **the current cursor position** are rendered inline, flowing naturally into the user's typing behavior.
+* Suggestions that apply **off-cursor** are previewed via an inline diff decoration, avoiding jumps in the viewport.
+* For **large, multi-line block inserts**, a floating preview is used to provide sufficient context without disrupting the user's current focus.
+
+This way, each path is deliberately scoped to the situations where it performs best, aligning it with the least disruptive representation for a given edit.
+
+Let’s take a walk-through of these rendering strategies in detail and examine when each one is used, starting with the least disruptive case.
+
+### Inline Completion
+
+When an edit is positioned right at the cursor, the least disruptive option is to stay out of the way. In such cases, we render the edit inline, making it blend directly into the user's typing flow.
+
+To achieve this, we use VS Code's inline completion API. This approach works especially well for small, localized changes like autoclosing brackets, replacing a few characters, or edits that are directly made under the cursor.
+
+![NES Cover Image Part 4](./images/nes-inline-completion-blog.gif)
+
+### Inline Diff Preview
+
+Because NES predicts the next meaningful edit across the file (not just at the cursor), many suggestions naturally apply outside the user’s current editing position. For example, while you are typing inside a function, NES may suggest updating a related import, adjusting a type definition, or fixing a reference several lines away.
+
+In these cases, the cost of getting the presentation wrong is high. The user is forced to jump across the file, break context and interrupt their flow.
+
+To avoid that, we render the suggestion as an inline diff decoration. The text to be replaced is highlighted in red, while the new content is shown in green at the insertion point. This way, the user gets a clear preview of the change without moving the cursor.
+
+![NES Cover Image Part 4](./images/inline-diff-completion-nes-part-4-blog.gif)
+
+This works particularly well for changes involving single-line updates or even multiple lines where each line is being changed independently.
+
+### Floating Diff Image
+
+Because NES has the ability to propose structural edits, such as inserting a new helper function, refactoring a block of logic, or adding a multi-line configuration, it frequently produces multi-line suggestions that cannot be represented as simple, inline changes.
+
+In these cases, the suggestion is no longer tied to the cursor’s immediate context, and the standard inline rendering stratergies do not suffice.
+
+At this point, the decision falls under either pulling the user away from where they’re working or bringing the preview to them. Since preserving developer flow is a core design principle for NES, we consistently choose the latter.
+
+In order to make the suggestion appear near the edit target without moving the cursor, we generate a floating diff preview and render it as an image. The color schema of the suggestion will also stay consistent with the other solutions we discussed previously - red for deleted text, and green for inserted ones.
+
+VS Code allows extensions to attach image-based decorations. With careful layout and positioning, these decorations can be floated near the edit target and used as a diff preview. However, the editor does not render code into images, which means the preview has to be generated by the extension itself.
+
+This required a small rendering pipeline:
+
+* **Theme matching:** Every VS Code theme is an extension with a standard JSON format. We parse the active theme, extract its token colour map, and match it to the user’s active settings so the preview matches the theme in the editor.
+
+* **Syntax highlighting:** VSCode includes a bundled `TextMate` runtime. We load the grammar for the current filetype, generate syntax scopes, and apply the same colouring rules that VS Code uses. This ensures that the rendered code maintains the same appearance as the code in the editor.
+
+* **Image rendering:** Here we use `canvaskit-wasm` to render the tokenized code into an image. To draw the code properly, we took the editor’s current `fontSize` and `lineHeight`, drew each tokenized segment at the correct coordinates, then applied diff highlights (additions in green and removals in red). The final image is then surfaced using the decoration API.
+
+![NES Cover Image Part 4](./images/floating-preview-nes-part-4-blog.gif)
+
+This approach allows multi-line edit suggestions to appear near their target location while preserving cursor position and avoiding viewport jumps.
+
+## Conclusion
+
+Different kinds of edit suggestions need different presentation strategies, with the editor API playing a decisive role in shaping the final experience.
+
+Rendering an NES suggestion ended up being less about displaying text and more about maintaining the reader’s attention. Because no matter what, once attention is broken, even the best suggestion gets ignored.
+
+Each rendering path is designed to stay as close as possible to the developer’s flow while working within the editor’s interaction model.
+
+At this point in our journey, NES can decide what to suggest (the model), when to surface it (request management), and how to show it without disruption (rendering paths). Combined, these layers define how AI-generated edit results become truly helpful in a real IDE.
 
 
 # NES Series (Part 1): The Edit Model Behind Tab Completion
@@ -2961,6 +3272,20 @@ image: "/og-image/nes-part-1-og-image.png"
 ------------------------------------------
 
 # NES Series (Part 1): The Edit Model Behind Tab Completion
+
+<Callout title="Note">
+  This is a four-part series on how we trained and built our NES model at Pochi, covering everything from the edit model behind tab completion to real-time context management, request lifecycles, and dynamic rendering for AI code edits.
+
+  Read the full series:
+
+  – [Part 1: The Edit Model Behind Tab Completion](https://docs.getpochi.com/developer-updates/how-we-created-nes-model/)
+
+  – [Part 2: Real-Time Context Management in Your Code Editor](https://docs.getpochi.com/developer-updates/context-management-in-your-editor/)
+
+  – [Part 3: The Request Management Lifecycle Under Continuous Typing](https://docs.getpochi.com/developer-updates/request-management-in-nes/)
+
+  – [Part 4: Dynamic Rendering Strategies for AI Code Edits](https://docs.getpochi.com/developer-updates/dynamic-rendering-stratergies-for-ai-edits/)
+</Callout>
 
 In this post, we’re introducing our internal edit model, the foundation behind Next Edit Suggestion (NES). It’s an upgrade to Tab completion, designed to predict the next change your code needs, wherever it lives.
 
@@ -3039,7 +3364,7 @@ Here’s a small example image showing the full inference-time context with the 
 
 NES combines these inputs to infer the user’s intent from earlier edits and predict the next edit inside the editable region only.
 
-In this post, we’ve focused on how the model is trained and evaluated. In the next post, we’ll go deeper into how these dynamic contexts are constructed, ranked, and streamed into the model to drive real-time, context-aware edit predictions.
+In this post, we’ve focused on how the model is trained and evaluated. In the **[next post](https://docs.getpochi.com/developer-updates/context-management-in-your-editor/)**, we’ll go deeper into how these dynamic contexts are constructed, ranked, and streamed into the model to drive real-time, context-aware edit predictions.
 
 
 # Developer Updates
@@ -3063,6 +3388,242 @@ Here you will find highlights on features, enhancements, and bug fixes, plus ins
   ### Sep 22, 2025
 
   --- */}
+
+## [Weekly Update #19](./2026-01-16-weekly-update-19)
+
+#### Jan 16, 2026
+
+# Weekly Update #19
+
+### TL;DR
+
+Another batch of updates is out. Here’s what we’ve shipped since the last release.
+
+### ✨ Enhancements
+
+* **New Pochi landing page:** The Pochi website now has a new landing page with clearer explanations of core features, workflows, and setup, making it easier for new users to evaluate and install Pochi. [#Visit Page](https://www.tabbyml.com/agent)
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/landing-page-pochi.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+* **Embedded bash outputs are now visible in the UI:** When workflows embed command outputs into the model context (for example git diff in the create-pr workflow), those outputs are now displayed in chat instead of being hidden as system messages, making it easier to inspect and debug what the agent is responding to. [#1010](https://github.com/TabbyML/pochi/issues/1010)
+  <video
+    controls
+    style={{
+     width: "100%",
+     borderRadius: "8px",
+     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+     }}
+  >
+    <source src="https://assets.docs.getpochi.com/bash-commands-embedds-024.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+### 📖 Resources
+
+* We published a step-by-step guide showing how to use Git worktrees and parallel agents to run multiple tasks concurrently, with a practical weather app example that walks through setup, coordination, and best practices. [#Read more](https://docs.getpochi.com/tutorials/parallel-agent-guidance/)
+
+### 🔥 Preview
+
+* Along with Create Plan flow for new tasks, we’re also working on letting you choose which MCP servers and tools a task can access directly from the sidebar, instead of using a single global auto-approve toggle.
+
+  Stay tuned!
+
+***
+
+## [Weekly Update #18](./2026-01-09-weekly-update-18)
+
+#### Jan 09, 2026
+
+# Weekly Update #18
+
+### TL;DR
+
+Hope your year’s been off to a good start.
+
+We’re back to shipping, and this release includes updates to how follow-up prompts use your local edits, a clearer Auto Layout setup flow, better recovery when things fail (like model loading and Mermaid diagrams), and a few UI fixes that remove common friction points.
+
+Let’s dive in!
+
+### 🚀 Features
+
+* **User Edits are now included in agent context:** Recent code changes you make are now captured and sent along with your next prompt. These edits are also shown in the chat context and multi-diff view, so you can see exactly what the agent is reacting to.
+
+  This helps the agent continue from your version of the code without you needing to re-explain what you already changed. **[#983](https://github.com/TabbyML/pochi/issues/983)**
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/useredits.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+### ✨ Enhancements
+
+* **Improved Auto Layout onboarding:** Auto Layout can modify several VS Code settings such as layout, keybindings, auto-save, and conflicting completions. The new onboarding screen explains these changes upfront and allows you to selectively apply them, making it easier to enable Auto Layout with confidence. **[#985](https://github.com/TabbyML/pochi/issues/985)**
+
+<div class="w-7/10 md:ml-8 *:shadow-xl/30 *:rounded-lg">![Auto layout modal](./images/auto-layout-modal.png)</div>
+
+* **Create worktrees from remote branches:** When creating a new worktree, you can now choose a remote branch (for example, `origin/feature-branch`) as the base instead of being limited to local branches. This makes it easier to start from branches that exist on the remote but aren’t checked out locally. **[#958](https://github.com/TabbyML/pochi/issues/958)**
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/select-remote-branches-024.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+* **Recover from Mermaid rendering errors in chat:** When a Mermaid diagram fails to render, a `Fix error with Pochi` button is now shown so you can ask the agent to correct the diagram instead of being stuck with a broken block. **[#968](https://github.com/TabbyML/pochi/issues/968)**
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/mermaid-diagram-fix-with-pochi-024.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+* **Retry when models fail to load:** If the model list fails to load due to a network or backend issue, you can now retry directly from the UI instead of reloading the entire VS Code window.**[#984](https://github.com/TabbyML/pochi/issues/984)**
+
+<div class="w-7/10 md:ml-8 *:shadow-xl/30 *:rounded-lg">![Retry loading models](./images/retry-loading-models.gif)</div>
+
+* **More space for worktree details:** We optimized the worktree list layout so action buttons no longer take up space when not visible, giving more room for worktree names and PR information, particularly on smaller screens.**[#925](https://github.com/TabbyML/pochi/issues/925)**
+
+### 🔥 Preview
+
+* We’re working on a Create Plan flow for new tasks in the sidebar, letting you generate a structured plan first before executing the task.
+
+***
+
+## [NES Series (Part 4): Dynamic Rendering Strategies for AI Code Edits](./dynamic-rendering-stratergies-for-ai-edits)
+
+#### Jan 06, 2026
+
+# NES Series (Part 4): Dynamic Rendering Strategies for AI Code Edits
+
+![NES Cover Image Part 4](./images/cover-nes-part-4-blog.png)
+
+So far in this series, you’ve seen **[how we trained our NES model](https://docs.getpochi.com/developer-updates/how-we-created-nes-model/)**, what that **[model takes as context](https://docs.getpochi.com/developer-updates/context-management-in-your-editor/)** to make a prediction, and how these model **[requests are managed with correct timing](https://docs.getpochi.com/developer-updates/request-management-in-nes/)** under continuous typing.
+
+With this, we’ve reached a point where NES can predict what edit should happen and when it should appear in the editor.
+
+In Part 4, we'll talk about how there is still one critical decision to make. **Once a suggestion arrives, how should that change be presented inside a live editor?**
+
+Pochi’s NES is built as a VS Code-native feature, not a standalone IDE or a custom fork. This means previews must integrate with VS Code’s public APIs, performance model, and established interaction patterns.
+
+This introduces a core design challenge - to surface enough context for a suggestion to be actionable, **without disrupting the developer's flow.**
+
+Designing a system that honors this is more than a matter of visual polish; it is a complex systems + UX problem. We’ll explore why this balance is so difficult for a native AI agent and the specific rendering strategies NES uses to achieve it.
+
+## The Display Problem
+
+Unlike conventional editor features, NES does not control where the user’s cursor is when a suggestion arrives. The editor is a continuously changing environment and does not function like a static canvas. Sometimes the user's cursor might be exactly where the edit belongs, or it can be twenty lines away, or the suggestion itself can be a huge change spanning multiple lines.
+
+Showing such suggestions naïvely introduces new failure modes that are easy to trigger and hard to ignore. One experiences jumps in cursor position, abrupt viewport scrolls, or rendering large changes directly in the editing flow. In practice, these behaviors are often more disruptive than not showing a suggestion at all.
+
+This brings us to the most fundamental design question: **How do we show an edit without stealing the developer’s attention?**
+
+Answering that question requires understanding the VS Code interaction model.
+
+VS Code does not provide a built-in API for previewing LLM-generated edits. Instead, the editor offers different primitives for different kinds of locations and edits. These primitives are optimized for various interaction patterns, each with their own affordances and limitations. Some work well for cursor-local edits, while others are better suited for changes elsewhere in the file.
+
+Understanding this difference is key. Pochi's NES does not render suggestions in a single, fixed way. Instead, NES relies on these primitives to create a balance between visibility and disruption.
+
+## Dynamic Rendering Strategy
+
+Rather than forcing all suggestions into a single representation, we designed a Dynamic Rendering Strategy offering the optimal visual experiences in different editing scenarios:
+
+* Suggestions that target **the current cursor position** are rendered inline, flowing naturally into the user's typing behavior.
+* Suggestions that apply **off-cursor** are previewed via an inline diff decoration, avoiding jumps in the viewport.
+* For **large, multi-line block inserts**, a floating preview is used to provide sufficient context without disrupting the user's current focus.
+
+This way, each path is deliberately scoped to the situations where it performs best, aligning it with the least disruptive representation for a given edit.
+
+Let’s take a walk-through of these rendering strategies in detail and examine when each one is used, starting with the least disruptive case.
+
+### Inline Completion
+
+When an edit is positioned right at the cursor, the least disruptive option is to stay out of the way. In such cases, we render the edit inline, making it blend directly into the user's typing flow.
+
+To achieve this, we use VS Code's inline completion API. This approach works especially well for small, localized changes like autoclosing brackets, replacing a few characters, or edits that are directly made under the cursor.
+
+![NES Cover Image Part 4](./images/nes-inline-completion-blog.gif)
+
+### Inline Diff Preview
+
+Because NES predicts the next meaningful edit across the file (not just at the cursor), many suggestions naturally apply outside the user’s current editing position. For example, while you are typing inside a function, NES may suggest updating a related import, adjusting a type definition, or fixing a reference several lines away.
+
+In these cases, the cost of getting the presentation wrong is high. The user is forced to jump across the file, break context and interrupt their flow.
+
+To avoid that, we render the suggestion as an inline diff decoration. The text to be replaced is highlighted in red, while the new content is shown in green at the insertion point. This way, the user gets a clear preview of the change without moving the cursor.
+
+![NES Cover Image Part 4](./images/inline-diff-completion-nes-part-4-blog.gif)
+
+This works particularly well for changes involving single-line updates or even multiple lines where each line is being changed independently.
+
+### Floating Diff Image
+
+Because NES has the ability to propose structural edits, such as inserting a new helper function, refactoring a block of logic, or adding a multi-line configuration, it frequently produces multi-line suggestions that cannot be represented as simple, inline changes.
+
+In these cases, the suggestion is no longer tied to the cursor’s immediate context, and the standard inline rendering stratergies do not suffice.
+
+At this point, the decision falls under either pulling the user away from where they’re working or bringing the preview to them. Since preserving developer flow is a core design principle for NES, we consistently choose the latter.
+
+In order to make the suggestion appear near the edit target without moving the cursor, we generate a floating diff preview and render it as an image. The color schema of the suggestion will also stay consistent with the other solutions we discussed previously - red for deleted text, and green for inserted ones.
+
+VS Code allows extensions to attach image-based decorations. With careful layout and positioning, these decorations can be floated near the edit target and used as a diff preview. However, the editor does not render code into images, which means the preview has to be generated by the extension itself.
+
+This required a small rendering pipeline:
+
+* **Theme matching:** Every VS Code theme is an extension with a standard JSON format. We parse the active theme, extract its token colour map, and match it to the user’s active settings so the preview matches the theme in the editor.
+
+* **Syntax highlighting:** VSCode includes a bundled `TextMate` runtime. We load the grammar for the current filetype, generate syntax scopes, and apply the same colouring rules that VS Code uses. This ensures that the rendered code maintains the same appearance as the code in the editor.
+
+* **Image rendering:** Here we use `canvaskit-wasm` to render the tokenized code into an image. To draw the code properly, we took the editor’s current `fontSize` and `lineHeight`, drew each tokenized segment at the correct coordinates, then applied diff highlights (additions in green and removals in red). The final image is then surfaced using the decoration API.
+
+![NES Cover Image Part 4](./images/floating-preview-nes-part-4-blog.gif)
+
+This approach allows multi-line edit suggestions to appear near their target location while preserving cursor position and avoiding viewport jumps.
+
+## Conclusion
+
+Different kinds of edit suggestions need different presentation strategies, with the editor API playing a decisive role in shaping the final experience.
+
+Rendering an NES suggestion ended up being less about displaying text and more about maintaining the reader’s attention. Because no matter what, once attention is broken, even the best suggestion gets ignored.
+
+Each rendering path is designed to stay as close as possible to the developer’s flow while working within the editor’s interaction model.
+
+At this point in our journey, NES can decide what to suggest (the model), when to surface it (request management), and how to show it without disruption (rendering paths). Combined, these layers define how AI-generated edit results become truly helpful in a real IDE.
+
+***
 
 ## [Weekly Update #17](./2026-01-02-weekly-update-17)
 
@@ -3196,7 +3757,7 @@ Also, starting this week, along with weekly updates, we’ll now include key deb
 
 In [Part 1](https://docs.getpochi.com/developer-updates/how-we-created-nes-model/), we talked about how we trained our NES model to predict the next meaningful edit you’re likely to make in your code.
 
-In [Part 2](https://docs.getpochi.com/developer-updates/#nes-series-part-2-real-time-context-management-in-your-code-editor), we then covered what the model takes as context to make this edit. This included deep dives into editable regions, user’s edit history, and using the overall project context.
+In [Part 2](https://docs.getpochi.com/developer-updates/context-management-in-your-editor/), we then covered what the model takes as context to make this edit. This included deep dives into editable regions, user’s edit history, and using the overall project context.
 
 Together, these two pieces (model + context) form the core intelligence foundation of the NES system. But incorporating them into an end-to-end real-time engineering system requires more thinking about real developer coding behaviour.
 
@@ -3298,7 +3859,7 @@ NES suggestions aren’t always a single line near the cursor. Sometimes the rel
 
 This is especially tricky inside a code editor like VS Code, where rendering options are limited. In such cases, how do we preview multi-line edits precisely? How do we make them feel lightweight, immediate, and skimmable, without being modal or disruptive?
 
-In Part 4, we’ll dive into how we approached these constraints and built a rendering system that enables richer previews and lower-latency interactions for code edits.
+In [Part 4](https://docs.getpochi.com/developer-updates/dynamic-rendering-stratergies-for-ai-edits/), we’ll dive into how we approached these constraints and built a rendering system that enables richer previews and lower-latency interactions for code edits.
 
 ***
 
@@ -3602,7 +4163,7 @@ We all understand real coding experience involves a lot of short, focused typing
 
 One of the reasons NES feels fast is because everything that isn’t the latest user intent is thrown away immediately. This cancellation of stale predictions is one of the biggest reasons Pochi’s NES feels so smooth and accurate. <br />
 
-More on this in our upcoming Part 3 post.  Stay tuned!
+More on this in our Part 3 post. **[Read more](https://docs.getpochi.com/developer-updates/request-management-in-nes/)**.
 
 ***
 
@@ -3948,6 +4509,20 @@ We shipped Next Edit Suggestions (one of our biggest upgrades so far), along wit
 
 # NES Series (Part 1): The Edit Model Behind Tab Completion
 
+<Callout title="Note">
+  This is a four-part series on how we trained and built our NES model at Pochi, covering everything from the edit model behind tab completion to real-time context management, request lifecycles, and dynamic rendering for AI code edits.
+
+  Read the full series:
+
+  – [Part 1: The Edit Model Behind Tab Completion](https://docs.getpochi.com/developer-updates/how-we-created-nes-model/)
+
+  – [Part 2: Real-Time Context Management in Your Code Editor](https://docs.getpochi.com/developer-updates/context-management-in-your-editor/)
+
+  – [Part 3: The Request Management Lifecycle Under Continuous Typing](https://docs.getpochi.com/developer-updates/request-management-in-nes/)
+
+  – [Part 4: Dynamic Rendering Strategies for AI Code Edits](https://docs.getpochi.com/developer-updates/dynamic-rendering-stratergies-for-ai-edits/)
+</Callout>
+
 In this post, we’re introducing our internal edit model, the foundation behind Next Edit Suggestion (NES). It’s an upgrade to Tab completion, designed to predict the next change your code needs, wherever it lives.
 
 Technically this is much harder to achieve, since NES considers the entire file plus your recent edit history and predicts how your code is likely to evolve: where the next change should happen, and what that change should be.
@@ -4025,7 +4600,7 @@ Here’s a small example image showing the full inference-time context with the 
 
 NES combines these inputs to infer the user’s intent from earlier edits and predict the next edit inside the editable region only.
 
-In this post, we’ve focused on how the model is trained and evaluated. In the next post, we’ll go deeper into how these dynamic contexts are constructed, ranked, and streamed into the model to drive real-time, context-aware edit predictions.
+In this post, we’ve focused on how the model is trained and evaluated. In the **[next post](https://docs.getpochi.com/developer-updates/context-management-in-your-editor/)**, we’ll go deeper into how these dynamic contexts are constructed, ranked, and streamed into the model to drive real-time, context-aware edit predictions.
 
 ***
 
@@ -4771,7 +5346,7 @@ image: "/og-image/cover-nes-part-3-og-image.png"
 
 In [Part 1](https://docs.getpochi.com/developer-updates/how-we-created-nes-model/), we talked about how we trained our NES model to predict the next meaningful edit you’re likely to make in your code.
 
-In [Part 2](https://docs.getpochi.com/developer-updates/#nes-series-part-2-real-time-context-management-in-your-code-editor), we then covered what the model takes as context to make this edit. This included deep dives into editable regions, user’s edit history, and using the overall project context.
+In [Part 2](https://docs.getpochi.com/developer-updates/context-management-in-your-editor/), we then covered what the model takes as context to make this edit. This included deep dives into editable regions, user’s edit history, and using the overall project context.
 
 Together, these two pieces (model + context) form the core intelligence foundation of the NES system. But incorporating them into an end-to-end real-time engineering system requires more thinking about real developer coding behaviour.
 
@@ -4873,7 +5448,7 @@ NES suggestions aren’t always a single line near the cursor. Sometimes the rel
 
 This is especially tricky inside a code editor like VS Code, where rendering options are limited. In such cases, how do we preview multi-line edits precisely? How do we make them feel lightweight, immediate, and skimmable, without being modal or disruptive?
 
-In Part 4, we’ll dive into how we approached these constraints and built a rendering system that enables richer previews and lower-latency interactions for code edits.
+In [Part 4](https://docs.getpochi.com/developer-updates/dynamic-rendering-stratergies-for-ai-edits/), we’ll dive into how we approached these constraints and built a rendering system that enables richer previews and lower-latency interactions for code edits.
 
 
 # Connect to Tabby Server for Enhanced Enterprise Experience
@@ -5049,6 +5624,7 @@ Welcome to the Pochi tutorials section. Here you will find step-by-step guides t
 * [Build a Custom MCP Server to Query Supabase with Natural Language in Pochi](./supabase-mcp-server)
 * [Visual Communication with Mermaid Graphs](./mermaid-graph)
 * [Voice-Driven Development with Handy and Pochi](./handy)
+* [Practical Guide to Building Parallel Agents Workflow](./parallel-agent-guidance)
 
 
 # Visualizing the Dialogue: How Pochi Uses Mermaid Graphs to Communicate
@@ -5119,6 +5695,389 @@ Mermaid graphs are more than just diagrams; they are the bridge for communicatio
 When you see Pochi generate a Mermaid graph, it's an invitation to collaborate. Take a moment to review it—your feedback is crucial for guiding the AI and ensuring the final result meets your exact expectations.
 
 And remember, this is a two-way conversation. If you ever feel that Pochi's plan is unclear, you can proactively ask it to generate a Mermaid graph. Just say, "Can you explain that with a Mermaid diagram?" This puts you in control, allowing you to request visual clarity whenever you need it.
+
+
+# Practical Guide to Building Parallel Agents Workflow
+URL: /tutorials/parallel-agent-guidance
+A practical guide to using Pochi's Parallel Agents for concurrent development - learn best practices through a hands-on project.
+***
+
+title: 'Practical Guide to Building Parallel Agents Workflow'
+description: "A practical guide to using Pochi's Parallel Agents for concurrent development - learn best practices through a hands-on project."
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+# Practical Guide to Building Parallel Agents Workflow
+
+## Why Use Parallel Agents?
+
+When working with AI agents, you'll hit a bottleneck: **sequential execution is slow**.
+
+A single AI agent completes task A → waits → then task B → waits → then task C. Three 15-minute tasks executed sequentially would take 45 minutes in total. In software development, for example, one agent builds the backend API → then the frontend → then writes tests.
+
+**In practice, teams often work in parallel.** Different specialists work in parallel, coordinating through shared specifications.
+
+**That's what Pochi's Parallel Agents solve.** Run multiple agents concurrently—each in its own isolated workspace, all working with shared context and background. Complete multiple tasks simultaneously.
+
+## What You Will Learn
+
+* Creating Git worktrees for isolated development
+* Running parallel agents on concurrent tasks
+* Best practices for developing a new project from scratch
+
+We'll build a weather demo application to show these concepts in practice.
+
+## Prerequisites
+
+* **[Install Pochi](../index.mdx#installation)** and ensure it is running in Visual Studio Code.
+* Node.js (version 18+) and npm installed
+* Git installed and configured on your system
+
+## How It Works
+
+Pochi's Parallel Agents run multiple AI agents concurrently, each in its own Git worktree with an isolated branch. Agents work independently on different tasks while sharing the same repository context, allowing you to complete multiple components simultaneously without conflicts.
+
+Learn more in the [Parallel Agents documentation](../parallel-agents.mdx).
+
+## Getting Started: Building a Weather Demo with Parallel Agents
+
+In this hands-on tutorial, we'll build a complete weather application using Pochi's Parallel Agents feature. You'll see how to coordinate multiple agents working in parallel on frontend, backend, and testing tasks - demonstrating the power of concurrent development.
+
+The development workflow for this project looks like this:
+
+![Parallel Agents Development Flow](./images/parallel-agents-develop-flow.png)
+
+### Step 1: Set Up the Environment and Initialize the Project
+
+First, we'll create a new [Next.js](https://nextjs.org/) project using `create-next-app`, which will automatically set up the project structure and initialize a Git repository for our parallel development workflow.
+
+#### Create the Project Directory
+
+```bash
+npx create-next-app@latest weather-demo
+cd weather-demo
+```
+
+### Step 2: Write a Design Document
+
+A well-structured design document is crucial when working with parallel agents. It serves as the single source of truth that all agents will reference to understand the project requirements, architecture, and their specific responsibilities.
+
+#### Create the Design Document
+
+Create a file `docs/design.md` with the following content:
+
+````markdown
+# Weather Application Design Document
+
+## Project Overview
+
+You are building a **Weather Demo** tool that provides:
+
+- **Current weather**
+- **Hourly forecast** for today
+- **7-day forecast**
+
+**Tech Stack:**
+
+- Backend: Next.js API
+- Frontend: Next.js (React)
+- Testing: Jest / Vitest
+
+## Data Structure
+
+```ts
+interface WeatherResponse {
+  location: string;
+  timezone: string;
+  current: Weather;
+  hourly: Weather[];
+  daily: Weather[];
+}
+
+interface Weather {
+  time: string;
+  temperature: number;
+  temperature_min: number;
+  temperature_max: number;
+  condition: string;
+  uv_index: number;
+}
+```
+
+## Agent Tasks
+
+### Backend Agent - Backend API
+
+- **Endpoint:** `GET /api/weather`
+
+- **Query Parameters:**
+  - `location` (required) - City name (e.g., "San Francisco", "London", "Tokyo")
+
+- **Responsibilities:**
+  - Use [**Open-Meteo Geocoding API**](https://open-meteo.com/en/docs/geocoding-api) to convert city name to latitude and longitude coordinates.
+  - Query weather data from [**Open-Meteo Weather API**](https://open-meteo.com/en/docs) using the obtained coordinates.
+  - Use `timezone=auto` parameter to automatically get the location's timezone from Open-Meteo.
+  - Convert the Open-Meteo response into the `WeatherResponse` format as defined above.
+  - Return 404 error if the city name is not found.
+
+### Frontend Agent - Frontend Rendering
+
+- **Route Requirement:**
+  - The page should be accessed using:
+    ```
+    /weather?location=CityName
+    ```
+  - If no `location` parameter is provided, default to **San Francisco**.
+  - The frontend should **read `location` from the query string** and pass it to `/api/weather`.
+
+- **Responsibilities:**
+  - Read the `location` query parameter from the URL.
+  - If no location parameter exists, use "San Francisco" as the default.
+  - Fetch weather data from the backend using the location parameter.
+  - Use the timezone information from the API response to display times correctly in the location's local time.
+  - Render current weather, hourly forecast, and 7-day forecast sections.
+
+- **UI / UX Requirements**
+  - Layout should be **clean, modern, and visually appealing**
+  - The page has three sections:
+      - Current Weather  
+          - Show: city, current temp, min/max temp, condition, UV index
+      - Hourly Forecast  
+          - Horizontal list
+          - Each item: time, condition, temperature
+      - 7-Day Forecast  
+          - Vertical list
+          - Each item: date, condition, temperature range
+          - Show the range with a bar
+
+  - Suggested styling goals:
+      - Clear section titles
+      - Cards or panels to group information
+      - Consistent spacing & alignment
+      - Responsive layout (desktop & mobile look good)
+      - You may use Tailwind
+
+### Test Agent - Testing
+
+- **Responsibilities:**
+  - Validate **backend API response**:
+    - Structure matches `WeatherResponse`
+    - All required fields are present
+    - Types are correct
+  - Test **frontend rendering**:
+    - Current weather section renders correctly
+    - Hourly list renders 24 rows
+    - Daily list renders 7 items
+    - Location name is displayed
+````
+
+#### Commit the Design Document
+
+```bash
+git add docs/design.md
+git commit -m "docs: add design document for weather application"
+```
+
+This design document provides clear specifications that each parallel agent can reference when working on their respective tasks. It defines a weather application that fetches real data from **[Open-Meteo API](https://open-meteo.com/)** (including geocoding and weather forecasts), specifying data structures, API contracts, and UI requirements for independent parallel implementation.
+
+### Step 3: Create Git Worktrees for Parallel Tasks
+
+Now we'll create three separate worktrees, each with its own branch, for the three parallel development tasks: frontend, backend, and test.
+
+#### Method 1: Using Pochi Sidebar
+
+You can create worktrees from the Pochi sidebar using **"New worktree"** mode. Simply start chatting with a prompt, and Pochi will automatically create a new worktree and launch the agent task:
+
+![Create Worktree from Pochi Sidebar](./images/pochi-sidebar-creating-worktree.png)
+
+#### Method 2: Using VSCode Source Control
+
+You can create worktrees directly from VSCode's built-in Source Control panel:
+
+![Create Worktree from VSCode Source Control](./images/vscode-source-control-worktree.png)
+
+#### Method 3: Using Command Line
+
+If you prefer the command line, you can create worktrees using Git commands:
+
+```bash
+# Create backend worktree
+git worktree add -b backend ../weather-demo.worktrees/backend
+
+# Create frontend worktree
+git worktree add -b frontend ../weather-demo.worktrees/frontend
+
+# Create test worktree
+git worktree add -b test ../weather-demo.worktrees/test
+```
+
+### Step 4: Create Parallel Agent Tasks
+
+Now comes the powerful part - creating parallel agent tasks in Pochi. Each agent will work independently in its own worktree, reading the design document and implementing its assigned component.
+
+You can find all your worktrees in the Pochi sidebar. When you start a chat, it will automatically create a task for the currently selected worktree. You can also choose different models for each agent based on the complexity of their tasks.
+
+![Worktrees in Pochi Sidebar](./images/pochi-sidebar-display-worktree.png)
+
+#### Create Backend Agent Task
+
+1. In Pochi sidebar, select the `backend` worktree
+2. In the chat, enter the prompt:
+
+```
+You are Backend Agent. Your task is to implement the backend for the weather app.
+Read and understand docs/design.md, then implement the Backend Agent task described in the document.
+```
+
+#### Create Frontend Agent Task
+
+1. In Pochi sidebar, select the `frontend` worktree
+2. In the chat, enter the prompt:
+
+```
+You are Frontend Agent. Your task is to implement the frontend for the weather app.
+Read and understand docs/design.md, then implement the Frontend Agent task described in the document.
+```
+
+#### Create Test Agent Task
+
+1. In Pochi sidebar, select the `test` worktree
+2. In the chat, enter the prompt:
+
+```
+You are Test Agent. Your task is to implement the tests for the weather app.
+Read and understand docs/design.md, then implement the Test Agent task described in the document.
+```
+
+#### Monitor Agent Progress
+
+Once all three tasks are created and running:
+
+1. View all active tasks in the Pochi sidebar
+2. Click on any task to see its progress and output
+3. Each agent will work independently, reading the design document and implementing its component
+4. You can interact with any agent by sending follow-up messages or clarifications
+
+The agents will work in parallel, and you can watch their progress in real-time from the Pochi interface.
+
+![Parallel Agents Running](./images/parallel-agents-tasks-running.png)
+
+### Step 5: Merge Worktrees and Run Tests
+
+Once all agents have completed their tasks, it's time to integrate all the work and verify that everything works together.
+
+#### Review Each Worktree
+
+Before merging, review the work in each worktree:
+
+1. Click **"Open worktree in terminal"** to commit any uncommitted changes
+2. Click **"Review changes"** to inspect the code and view the diff against the main branch
+3. Review the implementation for code quality and completeness
+4. Test the component individually if needed before merging
+
+![Parallel Agents Review](./images/parallel-agents-tasks-review.png)
+
+#### Merge All Changes
+
+Merge all three worktree branches into the main branch:
+
+```bash
+# Switch to main branch
+git checkout main
+
+# Merge all branches
+git merge backend
+git merge frontend
+git merge test
+
+# Verify status and resolve any conflicts if they arise
+git status
+```
+
+If conflicts occur during merging, resolve them by editing the conflicting files, then continue:
+
+```bash
+git add .
+git commit -m "chore: resolve merge conflicts"
+```
+
+#### Run the Application and Tests
+
+Install dependencies and start the application:
+
+```bash
+# Install dependencies
+npm install
+
+# Terminal 1: Start the development server
+npm run dev
+
+# Terminal 2: Run tests
+npm test
+
+# Optional: Run tests with coverage
+npm test -- --coverage
+```
+
+All tests should pass, showing that the agents coordinated their work effectively.
+
+#### Verify Integration
+
+1. Open the application in your browser (typically `http://localhost:3000/weather?location=San%20Francisco`)
+2. Verify that weather data is fetched and displayed correctly
+3. Test switching locations by changing the URL parameter (e.g., `?location=New%20York`)
+4. Check responsive design by resizing the browser window
+
+If everything works as expected, you've successfully built a complete application using parallel agents.
+
+Here's what mine looks like - pretty cool, right? And the best part: the code generated by the agents worked on the first try and passed all tests! The entire process took about 5 minutes—without parallel agents, a single agent would have needed around 15 minutes to complete all three tasks sequentially.
+
+![Weather App Screenshot](./images/parallel-agents-tasks-run-demo.png)
+
+## Tips and Troubleshooting
+
+### Agent Coordination
+
+* **Consistent Design Document**: Ensure your design document is detailed and clear. All agents reference this document, so ambiguity can lead to inconsistent implementations.
+* **API Contracts**: Clearly define API contracts (endpoints, request/response formats) in the design document so frontend and backend agents align perfectly.
+* **Version Control**: Commit the design document before creating worktrees so all agents have access to the latest specifications.
+
+### When to Use Parallel Agents (and When Not To)
+
+**Good fit for parallel agents:**
+
+* **Different roles, parallel completion** - Frontend, backend, tests working simultaneously
+* **Independent tasks** - Querying multiple websites and aggregating results
+* **Batch processing** - Generating test reports, review reports for multiple modules
+
+**Not a good fit:**
+
+* **Strong dependencies** - Requirements doc → design doc → implementation must be sequential
+* **Complex reasoning with continuous context** - Mathematical proofs, chain-of-thought problems
+* **High conflict resolution cost** - Multiple agents heavily modifying the same files
+
+### Common Issues
+
+**Issue**: Agent can't access design document
+
+* **Solution**: Ensure the design document is committed to the main branch before creating worktrees.
+
+**Issue**: API integration fails between frontend and backend
+
+* **Solution**: Verify API endpoint URLs and response formats match the design document specifications.
+
+**Issue**: Worktree conflicts during merge
+
+* **Solution**: Review the design document for any ambiguous specifications. Update and have agents revise their implementations if needed.
+
+## Conclusion
+
+Congratulations! You've successfully used Pochi's Parallel Agents to build a complete weather application with frontend, backend, and tests developed concurrently. This tutorial demonstrated how parallel agents can dramatically accelerate development by allowing multiple components to be built simultaneously.
+
+### Key Takeaways
+
+* **Git Worktrees**: Leveraging Git worktrees provides isolation while maintaining connection to the same repository.
+* **Parallel Agent Development**: Multiple agents working in isolated worktrees enable true parallel development without conflicts.
+* **Design Documents**: A clear, comprehensive design document is essential for coordinating multiple agents.
 
 
 # Build Your Own AI Teammate with Pochi in GitHub Actions
