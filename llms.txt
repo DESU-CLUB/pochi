@@ -234,11 +234,7 @@ Pochi v0.5.5
 Prompt:
   -p, --prompt <prompt>   Create a new task with the given prompt. You can also
                           pipe input to use as a prompt, for example: `cat
-                          .pochi/workflows/create-pr.md | pochi`. To use a
-                          workflow, use /workflow-name, for example: `pochi -p
-                          /create-pr`. Workflows can be embedded in larger
-                          prompts, for example: `pochi -p "please /create-pr
-                          with feat semantic convention"`
+                          prompt.txt | pochi`.
 
 Options:
   --max-steps <number>    Maximum number of stepsto run the task. If the task
@@ -979,7 +975,7 @@ We could operate on the default worktree directly; however, since those two issu
 
 ### Creating Worktree
 
-There are two ways to create a new Worktree,
+There are multiple ways to create a new Worktree,
 
 1. Create from Pochi sidebar directly
 
@@ -1019,7 +1015,10 @@ There are two ways to create a new Worktree,
   ![Open Worktree in Pochi](../assets/images/worktree-pochi.png)
 </div>
 
-In both cases, Pochi will create and check out the branch at the specified disk path as a worktree. You can then perform any action as if it were a standard Git repository, as an independent dev environment in each worktree.
+3. Let Pochi create a worktree for a new coding task\
+   When you are submitting the message to create a new task, using `Cmd/Ctrl + Enter`, then Pochi will create a worktree for the new task. The worktree/branch name is generated according to the coding task.
+
+In all cases, Pochi will create and check out the branch at the specified disk path as a worktree. You can then perform any action as if it were a standard Git repository, as an independent dev environment in each worktree.
 
 ### Create Task in Pochi
 
@@ -1280,6 +1279,71 @@ When you share a conversation, Pochi:
 
 1. Persist your task to our servers, and create a unique public URL for the task..
 2. Makes task accessible via a link - `app.getpochi.com/share/<shareId>`
+
+
+# Skills
+URL: /skills
+Define reusable behavior via SKILL.md definitions
+***
+
+title: Skills
+description: Define reusable behavior via SKILL.md definitions
+icon: "Zap"
+-----------
+
+Skills are reusable instruction sets that extend Pochi's capabilities. They allow you to standardize workflows, provide domain-specific knowledge, or integrate with external tools.
+
+## Install Skills
+
+You can discover and install skills from the community [skills.sh](https://skills.sh/) registry using the CLI:
+
+```bash
+npx skills add <skill-name>
+```
+
+This command automatically detects Pochi and installs the skill to `.pochi/skills` in your project.
+
+## Create Skills
+
+To create a custom skill, place a `SKILL.md` file in a subdirectory of `.pochi/skills/`.
+
+**File path:** `.pochi/skills/<skill-name>/SKILL.md`
+
+### Example
+
+Here is an example `SKILL.md` for creating GitHub issues:
+
+```markdown
+---
+name: create-issue
+description: Help create a github issue given the request
+---
+
+# Github Issue Creator
+
+1. Search the codebase for relevant context.
+2. Create an issue using `gh issue create`.
+3. Append the footer: "🤖 Generated with [Pochi](https://getpochi.com)".
+4. Assign the issue to the appropriate project.
+
+IMPORTANT: Only create the issue, do not attempt to fix it.
+```
+
+### Frontmatter
+
+Each skill must start with YAML frontmatter containing at least a `name` and `description`.
+
+| Field         | Description                                     |
+| ------------- | ----------------------------------------------- |
+| `name`        | Unique identifier (lowercase, hyphens allowed). |
+| `description` | Brief explanation of what the skill does.       |
+
+## Discovery
+
+Pochi automatically discovers skills in:
+
+* **Project**: `.pochi/skills/` (shared with your team)
+* **Global**: `~/.pochi/skills/` (available across all projects)
 
 
 # Slack
@@ -1554,91 +1618,6 @@ Having issues? Here are a few things to check:
 * **Sign-in/Model Configuration:** Verify that you are either signed in to your Pochi account or have a valid API key configured in your `~/.pochi/config.jsonc`.
 
 For more help, check the full [Troubleshooting](/troubleshooting) page or join our community on [Discord](https://getpochi.com/discord).
-
-
-# Workflows
-URL: /workflows
-Automate common development sequences
-***
-
-title: Workflows
-description: Automate common development sequences
-icon: "Workflow"
-----------------
-
-# Workflows
-
-Workflows are step-by-step automation templates that guide Pochi through complex, multi-step processes. Think of them as detailed recipes that Pochi can follow to complete common development tasks consistently and efficiently.
-
-### Configure
-
-Workflows shall be put inside `.pochi/workflows/` directory in your workspace root. Each workflow is a markdown file with a specific name. You can also specify metadata, such as which model to use for the workflow, through YAML frontmatter.
-
-Pochi also supports global workflows, which will be loaded from `~/.pochi/workflows`. This allows you to define a set of common workflows that you use across all of your projects, without having to copy them into each project's workspace.
-
-`.pochi/workflows/create-pr.md` is an example we used in Pochi's own development.
-
-```markdown
----
-model: "anthropic/claude-4-sonnet"
----
-
-Please help create a PR for the current staging changes, following these guidelines:
-- If there are no staging changes but there are uncommitted changes, please stage them first.
-- Create a branch name based on the current git diff status.
-- Write a meaningful commit message/PR title.
-- Use the gh CLI to create a PR.
-- When running the push operation, it might be aborted due to a husky pre-push hook. For formatting issues, amend the files and try again. For other issues, try to resolve them as much as possible.
-- The base branch for the PR should always be `main`.
-- Always push the branch to the remote repository before creating the PR.
-
-When creating PR with markdown description, pay attention to escape backticks, otherwise it will be executed as command substitution in the shell.
-```
-
-### Embedding Bash Commands
-
-You can use a single line prefixed with `!` to execute a command. The output of the command will be embedded into the prompt sent to the model.
-
-```markdown
-!`git diff --cached`
-
-Please review the staged changes and suggest improvements.
-```
-
-### Usage
-
-Once your workflows are set up, using them is straightforward:
-
-1. **Type `/` in VS Code** to trigger the Pochi workflow selector
-2. **Select a workflow** from the dropdown menu and press `Enter`.
-3. You can attached additional context when running the workflow, e.g `/create-pr assign Meng for review after creation`.
-
-<div
-  style={{
-  position: "relative",
-  paddingBottom: "53.7%",
-  height: 0,
-  overflow: "hidden",
-  maxWidth: "100%",
-}}
->
-  <iframe
-    src="https://drive.google.com/file/d/1p9UeAfkLEOlXBABF4CGub_aqAlAnmbVe/preview"
-    style={{
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    border: "none",
-    borderRadius: "8px",
-  }}
-    allowFullScreen
-    title="Pochi Demo - Workflows"
-  />
-</div>
-
-*This video demonstrates how to use workflows in VS Code*
 
 
 # Weekly Update
@@ -3030,6 +3009,76 @@ Another batch of updates is out. Here’s what we’ve shipped since the last re
   Stay tuned!
 
 
+# Weekly Update
+URL: /developer-updates/2026-01-23-weekly-update-20
+
+***
+
+## title: Weekly Update #20
+
+# Weekly Update #20
+
+### TL;DR
+
+As Pochi takes on larger and more complex tasks, it’s increasingly important to be explicit about intent and permissions.
+
+This release introduces new workflows for planning before execution and for restricting tool access per task, making agent behavior easier to reason about and safer by default.
+
+### 🚀 Features
+
+* **Create Plan Mode:** You can now create a task in Plan Mode to generate and refine an implementation plan before any code is changed. To use, click on the `Plan` option when creating a new task from the sidebar.
+
+  1. Plan tasks   generates a structured implementation plan instead of immediately executing edits.
+  2. The plan is stored as a workspace artifact (i.e. `plan.md`) in Pochi’s virtual filesystem and does not modify your project directory.
+  3. You can create a separate plan for each task without polluting your repo.
+  4. You can use existing workflows: inline comments, review edits, and follow-up prompts to refine the plan.
+  5. After review, you can explicitly start execution from the approved plan.
+
+  This makes planning a first-class step in the agent workflow and lets you align on scope, approach, and risks before applying multi-file changes.**[#819](https://github.com/TabbyML/pochi/issues/819)**
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/create-plan.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+### ✨ Enhancements
+
+* **Granular MCP Tool Control in Sidebar:** You can now control MCP access per task instead of auto-approving all tools globally. Follow-up messages are restricted to the MCP servers selected at task creation.
+
+  To try it out, look for the MCP server selector in the sidebar input. Servers disabled in global settings are not shown in the selector. This provides better security and more explicit control over which tools the agent can use. **[#939](https://github.com/TabbyML/pochi/issues/939)**
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/mcp-granular-control-026.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+### 🐛 Bug Fixes
+
+* **Fixed Token Coloring in NES Code Renderer:** Fixed an issue where certain token types (such as string literals) were not being theme-colored correctly in the NES code renderer. **[#731](https://github.com/TabbyML/pochi/issues/731)**
+
+### 🔥 Preview
+
+* Soon you’ll be able to archive tasks in the sidebar to keep active work focused, with filters and quick restore when you need to revisit something.
+
+* We’re also building a built-in browser subagent that can browse and interact with live web pages and stream its actions directly in the editor.
+
+
 # NES Series (Part 2): Real-Time Context Management in Your Code Editor
 URL: /developer-updates/context-management-in-your-editor
 Learn how Pochi's NES model manages, ranks, and streams real-time edit context
@@ -3388,6 +3437,107 @@ Here you will find highlights on features, enhancements, and bug fixes, plus ins
   ### Sep 22, 2025
 
   --- */}
+
+## [Plan like you code](./plan-like-you-code)
+
+#### Jan 22, 2026
+
+# Plan like you code
+
+<video
+  controls
+  style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+>
+  <source src="https://assets.docs.getpochi.com/create-plan.mp4" type="video/mp4" />
+
+  Your browser does not support the video tag.
+</video>
+
+We shipped **Plan Mode** in Pochi.
+
+Planning by itself isn’t new. What’s interesting is what happens when planning plugs into a workflow that already supports inline comments, review edits, and task-based execution.
+
+Create Plan is a feature we built, but its real value comes from how it composes with the rest of the system.
+
+Instead of treating the plan as something you just read and approve, you can iterate on it the same way you’d review a diff - leave inline comments, refine specific steps, and then execute directly from that agreed version.
+
+The plan lives as a real workspace artifact (i.e. `plan.md`) and opens in the editor, so planning becomes part of the same collaboration loop as code.
+
+**[Read the full docs](https://docs.getpochi.com/create-plan)**
+
+***
+
+## [Weekly Update #20](./2026-01-23-weekly-update-20)
+
+#### Jan 23, 2026
+
+# Weekly Update #20
+
+### TL;DR
+
+As Pochi takes on larger and more complex tasks, it’s increasingly important to be explicit about intent and permissions.
+
+This release introduces new workflows for planning before execution and for restricting tool access per task, making agent behavior easier to reason about and safer by default.
+
+### 🚀 Features
+
+* **Create Plan Mode:** You can now create a task in Plan Mode to generate and refine an implementation plan before any code is changed. To use, click on the `Plan` option when creating a new task from the sidebar.
+
+  1. Plan tasks   generates a structured implementation plan instead of immediately executing edits.
+  2. The plan is stored as a workspace artifact (i.e. `plan.md`) in Pochi’s virtual filesystem and does not modify your project directory.
+  3. You can create a separate plan for each task without polluting your repo.
+  4. You can use existing workflows: inline comments, review edits, and follow-up prompts to refine the plan.
+  5. After review, you can explicitly start execution from the approved plan.
+
+  This makes planning a first-class step in the agent workflow and lets you align on scope, approach, and risks before applying multi-file changes.**[#819](https://github.com/TabbyML/pochi/issues/819)**
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/create-plan.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+### ✨ Enhancements
+
+* **Granular MCP Tool Control in Sidebar:** You can now control MCP access per task instead of auto-approving all tools globally. Follow-up messages are restricted to the MCP servers selected at task creation.
+
+  To try it out, look for the MCP server selector in the sidebar input. Servers disabled in global settings are not shown in the selector. This provides better security and more explicit control over which tools the agent can use. **[#939](https://github.com/TabbyML/pochi/issues/939)**
+
+  <video
+    controls
+    style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+  >
+    <source src="https://assets.docs.getpochi.com/mcp-granular-control-026.mp4" type="video/mp4" />
+
+    Your browser does not support the video tag.
+  </video>
+
+### 🐛 Bug Fixes
+
+* **Fixed Token Coloring in NES Code Renderer:** Fixed an issue where certain token types (such as string literals) were not being theme-colored correctly in the NES code renderer. **[#731](https://github.com/TabbyML/pochi/issues/731)**
+
+### 🔥 Preview
+
+* Soon you’ll be able to archive tasks in the sidebar to keep active work focused, with filters and quick restore when you need to revisit something.
+
+* We’re also building a built-in browser subagent that can browse and interact with live web pages and stream its actions directly in the editor.
+
+***
 
 ## [Weekly Update #19](./2026-01-16-weekly-update-19)
 
@@ -5243,6 +5393,43 @@ This week we polished the VS Code extension with some **UX upgrades**, open-sour
 ### Bug Fixes 🐛
 
 * **File search now correctly surfaces matching files:** Queries that used to return empty results will now behave as expected. [#79](https://github.com/TabbyML/pochi/pull/79)
+
+
+# Plan like you code
+URL: /developer-updates/plan-like-you-code
+Plan, review, and align before executing code changes
+***
+
+title: 'Plan like you code'
+description: "Plan, review, and align before executing code changes"
+--------------------------------------------------------------------
+
+# Plan like you code
+
+<video
+  controls
+  style={{
+      width: "100%",
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+      }}
+>
+  <source src="https://assets.docs.getpochi.com/create-plan.mp4" type="video/mp4" />
+
+  Your browser does not support the video tag.
+</video>
+
+We shipped **Plan Mode** in Pochi.
+
+Planning by itself isn’t new. What’s interesting is what happens when planning plugs into a workflow that already supports inline comments, review edits, and task-based execution.
+
+Create Plan is a feature we built, but its real value comes from how it composes with the rest of the system.
+
+Instead of treating the plan as something you just read and approve, you can iterate on it the same way you’d review a diff - leave inline comments, refine specific steps, and then execute directly from that agreed version.
+
+The plan lives as a real workspace artifact (i.e. `plan.md`) and opens in the editor, so planning becomes part of the same collaboration loop as code.
+
+**[Read the full docs](https://docs.getpochi.com/create-plan)**
 
 
 # Closing the Loop: How Reinforcement Learning is Changing AI Coding
